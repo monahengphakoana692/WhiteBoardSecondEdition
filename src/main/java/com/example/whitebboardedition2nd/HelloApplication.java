@@ -2,6 +2,7 @@ package com.example.whitebboardedition2nd;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
@@ -24,22 +25,7 @@ public class HelloApplication extends Application
         FlowPane root = new FlowPane();//setting flow for resizing scene
         VBox    mainLayout = new VBox();
 
-
-        HBox externalFunction = new HBox();//this is for functions of adding and removing external source like images
-        HBox internalFunction = new HBox();//this is for functions of adding and removing internal sources like drawings
-
-
-        externalFunction.setStyle("-fx-background-color:blue;");
-        externalFunction.setPrefHeight(40);
-        externalFunction.setPrefWidth(1550);
-
-        internalFunction.setStyle("-fx-background-color:lime;");
-        internalFunction.setPrefHeight(770);
-        internalFunction.setPrefWidth(1550);
-        internalFunction.getChildren().addAll(toolsPanel(),ActivePanel(),settingsPanel());
-
-
-        mainLayout.getChildren().addAll(externalFunction,internalFunction);
+        mainLayout.getChildren().addAll(externalFunctions(),internalFunctions());
 
 
         root.setStyle("-fx-background-color:red;");
@@ -71,15 +57,14 @@ public class HelloApplication extends Application
         return toolsSet;
     }
 
-    public ScrollPane ActivePanel()//holds current activities such as drawing
+    public StackPane ActivePanel()//holds current activities such as drawing
     {
         ScrollPane move = new ScrollPane();
         StackPane actionPanel = new StackPane();
         actionPanel.setStyle("-fx-background-color:black;");
-        actionPanel.setPrefWidth(1300);
-        move.getChildrenUnmodifiable().add(actionPanel);
+        actionPanel.setPrefWidth(1300);;
 
-        return move;
+        return actionPanel;
     }
 
     public VBox settingsPanel()//for holding color setting and other setting
@@ -90,6 +75,32 @@ public class HelloApplication extends Application
         settings.setPrefHeight(770);
 
         return settings;
+    }
+
+   public HBox externalFunctions()
+   {
+       HBox externalFunction = new HBox();
+
+       Button upload = new Button("Upload");
+
+       externalFunction.setStyle("-fx-background-color:blue;");
+       externalFunction.setPrefHeight(40);
+       externalFunction.setPrefWidth(1550);
+       externalFunction.getChildren().add(upload);
+
+       return externalFunction;
+   }
+
+    public HBox internalFunctions()
+    {
+        HBox internalFunction = new HBox();
+
+        internalFunction.setStyle("-fx-background-color:lime;");
+        internalFunction.setPrefHeight(770);
+        internalFunction.setPrefWidth(1550);
+        internalFunction.getChildren().addAll(toolsPanel(),ActivePanel(),settingsPanel());
+
+        return internalFunction;
     }
 
 }
