@@ -91,7 +91,7 @@ public class HelloApplication extends Application
        return externalFunction;
    }
 
-    public HBox internalFunctions()
+    public HBox internalFunctions()//this is for internal activities
     {
         HBox internalFunction = new HBox();
 
