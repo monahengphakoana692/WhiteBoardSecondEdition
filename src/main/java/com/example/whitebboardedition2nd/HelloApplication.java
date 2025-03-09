@@ -2,6 +2,7 @@ package com.example.whitebboardedition2nd;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -70,13 +71,15 @@ public class HelloApplication extends Application
         return toolsSet;
     }
 
-    public StackPane ActivePanel()//holds current activities such as drawing
+    public ScrollPane ActivePanel()//holds current activities such as drawing
     {
+        ScrollPane move = new ScrollPane();
         StackPane actionPanel = new StackPane();
         actionPanel.setStyle("-fx-background-color:black;");
         actionPanel.setPrefWidth(1300);
+        move.getChildrenUnmodifiable().add(actionPanel);
 
-        return actionPanel;
+        return move;
     }
 
     public VBox settingsPanel()//for holding color setting and other setting
