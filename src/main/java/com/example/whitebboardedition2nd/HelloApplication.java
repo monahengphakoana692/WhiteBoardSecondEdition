@@ -59,7 +59,7 @@ public class HelloApplication extends Application
         stage.show();
     }
 
-    public VBox toolsPanel()
+    public VBox toolsPanel()//holds tools to be used for drawing
     {
         VBox toolsSet = new VBox();
 
@@ -70,7 +70,7 @@ public class HelloApplication extends Application
         return toolsSet;
     }
 
-    public StackPane ActivePanel()
+    public StackPane ActivePanel()//holds current activities such as drawing
     {
         StackPane actionPanel = new StackPane();
         actionPanel.setStyle("-fx-background-color:black;");
@@ -79,7 +79,7 @@ public class HelloApplication extends Application
         return actionPanel;
     }
 
-    public VBox settingsPanel()
+    public VBox settingsPanel()//for holding color setting and other setting
     {
         VBox settings = new VBox();
         settings.setStyle("-fx-background-color:yellow;");
