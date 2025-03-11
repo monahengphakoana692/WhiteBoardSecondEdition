@@ -49,12 +49,12 @@
     -fx-background-color:white;
 }
 
-#toolHolder,#eraserHolder
+#toolHolder,#eraserHolder,#recHolder
 {
     -fx-background-color: white;
     -fx-border-color:black;
 }
-#toolHolder,#eraserHolder:hover
+#toolHolder,#eraserHolder,#recHolder:hover
 {
     -fx-width:52;
     -fx-cursor:hand;

@@ -223,15 +223,14 @@ public class HelloApplication extends Application
         pane = new StackPane();
         pane.setId("DrawingSpace");
 
-        pane.setOnMousePressed(event ->
-        {
+        pane.setOnMousePressed(event -> {
             graphicsContext.beginPath();
             graphicsContext.moveTo(event.getX(), event.getY()); // Use local coordinates
             graphicsContext.stroke();
+
         });
 
-        pane.setOnMouseDragged(event ->
-        {
+        pane.setOnMouseDragged(event -> {
             graphicsContext.lineTo(event.getX(), event.getY()); // Use local coordinates
             graphicsContext.stroke();
 
@@ -241,39 +240,5 @@ public class HelloApplication extends Application
         pane.getChildren().add(canvas);
 
         return pane;
-    }
-
-    public void rectangleDraw()
-    {
-
-        Canvas canvas = new Canvas(1120, 700); // Set canvas size
-        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
-
-        graphicsContext.setStroke(Color.BLACK);
-        graphicsContext.setLineWidth(2);
-
-        StackPane pane = new StackPane();
-        pane.setId("DrawingSpace");
-
-        final double[] startX = new double[1];
-        final double[] startY = new double[1];
-
-        pane.setOnMousePressed(event -> {
-            startX[0] = event.getX();
-            startY[0] = event.getY();
-        });
-
-        pane.setOnMouseDragged(event -> {
-            double width = event.getX() - startX[0];
-            double height = event.getY() - startY[0];
-
-            graphicsContext.clearRect(0, 0, canvas.getWidth(), canvas.getHeight()); // Clear previous frame
-            graphicsContext.strokeRect(startX[0], startY[0], width, height);
-        });
-
-        pane.getChildren().add(canvas);
-        //return pane;
-
-
     }
 }
