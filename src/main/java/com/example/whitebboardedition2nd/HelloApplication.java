@@ -28,8 +28,11 @@ public class HelloApplication extends Application
         mainLayout.getChildren().addAll(externalFunctions(),internalFunctions());
 
 
-        root.setStyle("-fx-background-color:gray;");
+
+        root.setId("root");
+
         root.getChildren().add(mainLayout);
+        root.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
 
 
         setPage(stage,new Scene(root,1520,800));
@@ -50,7 +53,7 @@ public class HelloApplication extends Application
     {
         VBox toolsSet = new VBox();
 
-        toolsSet.setStyle("-fx-background-color:purple;");
+        
         toolsSet.setId("toolPanel");
         toolsSet.setPrefHeight(770);
         toolsSet.setPrefWidth(100);
@@ -63,7 +66,8 @@ public class HelloApplication extends Application
         ScrollPane move = new ScrollPane();
 
         StackPane actionPanel = new StackPane();
-        actionPanel.setStyle("-fx-background-color:black;");
+
+        actionPanel.setId("actionPanel");
         actionPanel.setPrefWidth(1300);
         actionPanel.getChildren().add(currentActive());
 
@@ -73,7 +77,8 @@ public class HelloApplication extends Application
     public VBox settingsPanel()//for holding color setting and other setting
     {
         VBox settings = new VBox();
-        settings.setStyle("-fx-background-color:yellow;");
+
+        settings.setId("settings");
         settings.setPrefWidth(300);
         settings.setPrefHeight(770);
 
@@ -86,7 +91,8 @@ public class HelloApplication extends Application
 
        Button upload = new Button("Upload");
 
-       externalFunction.setStyle("-fx-background-color:blue;");
+
+       externalFunction.setId("externalFunctions");
        externalFunction.setPrefHeight(40);
        externalFunction.setPrefWidth(1550);
        externalFunction.getChildren().add(upload);

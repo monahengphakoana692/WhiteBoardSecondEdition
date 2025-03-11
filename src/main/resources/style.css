@@ -1,0 +1,39 @@
+
+#root {
+    -fx-background-color: #2e2e2e; /* Dark Gray */
+}
+
+/* Toolbar panel (left side) */
+#toolPanel {
+    -fx-background-color: #3c3c3c; /* Darker Gray */
+    -fx-border-color: #1e1e1e; /* Slightly lighter gray border */
+    -fx-border-width: 1px;
+}
+
+
+#externalFunctions {
+    -fx-background-color: #252525; /* Dark Gray for the menu bar */
+    -fx-border-color: #1e1e1e;
+    -fx-border-width: 0 0 1px 0;
+}
+
+
+#settings {
+    -fx-background-color: #3c3c3c;
+    -fx-border-color: #1e1e1e;
+    -fx-border-width: 1px;
+}
+
+
+#actionPanel {
+    -fx-background-color: #1e1e1e; /* Black canvas */
+    -fx-border-color: #3c3c3c;
+    -fx-border-width: 2px;
+}
+
+
+#currentActive {
+    -fx-background-color: #2b2b2b; /* Slightly lighter black */
+    -fx-border-color: #505050;
+    -fx-border-width: 1px;
+}
