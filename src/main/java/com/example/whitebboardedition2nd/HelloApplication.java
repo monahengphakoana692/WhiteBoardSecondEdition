@@ -2,12 +2,15 @@ package com.example.whitebboardedition2nd;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -116,10 +119,39 @@ public class HelloApplication extends Application
     {
         StackPane activities = new StackPane();
 
+
         activities.setMaxWidth(1120);
         activities.setMaxHeight(700);
-        activities.setStyle("-fx-background-color:white;");
+        activities.setId("currentActive");
+        activities.getChildren().add(drawingAction());
 
         return activities;
+    }
+
+    public StackPane drawingAction()
+    {
+        Canvas canvas = new Canvas(1120, 700); // Set canvas size
+        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+
+        graphicsContext.setStroke(Color.BLACK);
+        graphicsContext.setLineWidth(2);
+
+        StackPane pane = new StackPane();
+        pane.setStyle("-fx-background-color: red;");
+
+        pane.setOnMousePressed(event -> {
+            graphicsContext.beginPath();
+            graphicsContext.moveTo(event.getX(), event.getY()); // Use local coordinates
+            graphicsContext.stroke();
+        });
+
+        pane.setOnMouseDragged(event -> {
+            graphicsContext.lineTo(event.getX(), event.getY()); // Use local coordinates
+            graphicsContext.stroke();
+        });
+
+        pane.getChildren().add(canvas);
+
+        return pane;
     }
 }
