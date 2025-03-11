@@ -49,7 +49,12 @@
     -fx-background-color:white;
 }
 
-#DrawingSpace:hover
+#toolHolder
 {
+    -fx-background-color: white;
+}
+#toolHolder:hover
+{
+    -fx-width:52;
     -fx-cursor:hand;
 }
