@@ -137,7 +137,7 @@ public class HelloApplication extends Application
         graphicsContext.setLineWidth(2);
 
         StackPane pane = new StackPane();
-        pane.setStyle("-fx-background-color: red;");
+        pane.setId("DrawingSpace");
 
         pane.setOnMousePressed(event -> {
             graphicsContext.beginPath();
