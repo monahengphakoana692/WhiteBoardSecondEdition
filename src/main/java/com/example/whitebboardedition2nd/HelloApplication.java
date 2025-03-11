@@ -97,9 +97,12 @@ public class HelloApplication extends Application
         });
         eraserHolder.setOnMouseClicked(event ->
         {
+            //preparing
             eraserTracker.set(1);
             eraserHolder.setStyle("-fx-background-color:gray;");
             toolHolder.setStyle("-fx-background-color:white;");
+            graphicsContext.setStroke(Color.WHITE);
+            graphicsContext.setLineWidth(8);
             Image eraserImage = new Image(getClass().getResourceAsStream("/eraser.png"));
             ImageCursor eraserCursor = new ImageCursor(eraserImage);
             pane.setCursor(eraserCursor);
@@ -228,8 +231,6 @@ public class HelloApplication extends Application
             graphicsContext.lineTo(event.getX(), event.getY()); // Use local coordinates
             graphicsContext.stroke();
         });
-
-
 
 
         pane.getChildren().add(canvas);
