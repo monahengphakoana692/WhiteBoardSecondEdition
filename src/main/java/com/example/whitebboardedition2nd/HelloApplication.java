@@ -1,6 +1,8 @@
 package com.example.whitebboardedition2nd;
 
 import javafx.application.Application;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -17,7 +19,7 @@ import java.io.IOException;
 
 public class HelloApplication extends Application
 {
-    private int penTracker = 0;
+    private IntegerProperty penTracker = new SimpleIntegerProperty(0);
 
 
 
@@ -61,22 +63,20 @@ public class HelloApplication extends Application
 
         Image penImage = new Image(getClass().getResourceAsStream("/pen.png"));
         ImageView penTool = new ImageView(penImage);
-        penTool.setFitWidth(30); // Set width properly
-        penTool.setFitHeight(30); // Set height properly
-
+        penTool.setFitWidth(30);
+        penTool.setFitHeight(30);
 
         Pane toolHolder = new Pane(penTool);
-
         toolHolder.setId("toolHolder");
-        toolHolder.setPrefSize(50, 50); // Set preferred size for the holder
-        toolHolder.setOnMouseClicked(event -> {
+        toolHolder.setPrefSize(50, 50);
 
-            penTracker = 1;
+        // When clicked, update penTracker and change the background color
+        toolHolder.setOnMouseClicked(event -> {
+            penTracker.set(1);
             toolHolder.setStyle("-fx-background-color:gray;");
         });
 
         toolsSet.getChildren().add(toolHolder);
-
         return toolsSet;
     }
 
@@ -132,20 +132,21 @@ public class HelloApplication extends Application
 
     public StackPane currentActive()
     {
-        StackPane activities = new StackPane();
+        StackPane activities;
 
-
+        activities = new StackPane();
         activities.setMaxWidth(1120);
         activities.setMaxHeight(700);
         activities.setId("currentActive");
 
-        if(penTracker == 1)
-        {
-            activities.getChildren().add(drawingAction());
-        }else
-        {
 
-        }
+        penTracker.addListener((obs, oldVal, newVal) ->
+        {
+            activities.getChildren().clear(); // Clear previous content
+            if (newVal.intValue() == 1) {
+                activities.getChildren().add(drawingAction()); // Add drawing area dynamically
+            }
+        });
 
 
         return activities;
