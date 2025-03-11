@@ -26,6 +26,7 @@ public class HelloApplication extends Application
     GraphicsContext graphicsContext = null;
     Slider slider = null;
     StackPane pane;
+    ColorPicker colorPicker = null;
 
 
 
@@ -91,13 +92,15 @@ public class HelloApplication extends Application
             penTracker.set(1);
             toolHolder.setStyle("-fx-background-color:gray;");
             eraserHolder.setStyle("-fx-background-color:white;");
+            graphicsContext.setStroke(colorPicker.getValue());
+            graphicsContext.setLineWidth(slider.getValue());
             ImageCursor penCursor = new ImageCursor(penImage);
             pane.setCursor(penCursor);
 
         });
         eraserHolder.setOnMouseClicked(event ->
         {
-            //preparing
+            //preparing eraser
             eraserTracker.set(1);
             eraserHolder.setStyle("-fx-background-color:gray;");
             toolHolder.setStyle("-fx-background-color:white;");
@@ -129,7 +132,7 @@ public class HelloApplication extends Application
     {
         VBox settings = new VBox(20);
 
-        ColorPicker colorPicker = new ColorPicker();
+        colorPicker = new ColorPicker();
 
         slider = new Slider();
         slider.setMax(1);
