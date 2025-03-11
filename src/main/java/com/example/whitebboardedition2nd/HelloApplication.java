@@ -21,9 +21,11 @@ import java.io.IOException;
 public class HelloApplication extends Application
 {
     private IntegerProperty penTracker = new SimpleIntegerProperty(0);
+    private IntegerProperty eraserTracker = new SimpleIntegerProperty(0);
     private String colorPickerKeeper = "";
     GraphicsContext graphicsContext = null;
     Slider slider = null;
+    StackPane pane;
 
 
 
@@ -89,12 +91,18 @@ public class HelloApplication extends Application
             penTracker.set(1);
             toolHolder.setStyle("-fx-background-color:gray;");
             eraserHolder.setStyle("-fx-background-color:white;");
+            ImageCursor penCursor = new ImageCursor(penImage);
+            pane.setCursor(penCursor);
 
         });
         eraserHolder.setOnMouseClicked(event ->
         {
+            eraserTracker.set(1);
             eraserHolder.setStyle("-fx-background-color:gray;");
             toolHolder.setStyle("-fx-background-color:white;");
+            Image eraserImage = new Image(getClass().getResourceAsStream("/eraser.png"));
+            ImageCursor eraserCursor = new ImageCursor(eraserImage);
+            pane.setCursor(eraserCursor);
         });
 
         toolsSet.getChildren().addAll(toolHolder,eraserHolder);
@@ -190,6 +198,11 @@ public class HelloApplication extends Application
             }
         });
 
+        eraserTracker.addListener((obs, oldVal, newVal) ->
+        {
+
+        });
+
 
         return activities;
     }
@@ -202,7 +215,7 @@ public class HelloApplication extends Application
         graphicsContext.setStroke(Color.BLACK);
         graphicsContext.setLineWidth(2);
 
-        StackPane pane = new StackPane();
+        pane = new StackPane();
         pane.setId("DrawingSpace");
 
         pane.setOnMousePressed(event -> {
@@ -216,9 +229,8 @@ public class HelloApplication extends Application
             graphicsContext.stroke();
         });
 
-        Image penImage = new Image(getClass().getResourceAsStream("/pen.png")); // Load from resources
-        ImageCursor penCursor = new ImageCursor(penImage);
-        pane.setCursor(penCursor);
+
+
 
         pane.getChildren().add(canvas);
 
