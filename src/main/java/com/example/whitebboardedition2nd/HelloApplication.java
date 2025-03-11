@@ -28,7 +28,7 @@ public class HelloApplication extends Application
         mainLayout.getChildren().addAll(externalFunctions(),internalFunctions());
 
 
-        root.setStyle("-fx-background-color:red;");
+        root.setStyle("-fx-background-color:gray;");
         root.getChildren().add(mainLayout);
 
 
@@ -51,8 +51,9 @@ public class HelloApplication extends Application
         VBox toolsSet = new VBox();
 
         toolsSet.setStyle("-fx-background-color:purple;");
+        toolsSet.setId("toolPanel");
         toolsSet.setPrefHeight(770);
-        toolsSet.setPrefWidth(50);
+        toolsSet.setPrefWidth(100);
 
         return toolsSet;
     }
@@ -60,9 +61,11 @@ public class HelloApplication extends Application
     public StackPane ActivePanel()//holds current activities such as drawing
     {
         ScrollPane move = new ScrollPane();
+
         StackPane actionPanel = new StackPane();
         actionPanel.setStyle("-fx-background-color:black;");
-        actionPanel.setPrefWidth(1300);;
+        actionPanel.setPrefWidth(1300);
+        actionPanel.getChildren().add(currentActive());
 
         return actionPanel;
     }
@@ -71,7 +74,7 @@ public class HelloApplication extends Application
     {
         VBox settings = new VBox();
         settings.setStyle("-fx-background-color:yellow;");
-        settings.setPrefWidth(200);
+        settings.setPrefWidth(300);
         settings.setPrefHeight(770);
 
         return settings;
@@ -96,11 +99,21 @@ public class HelloApplication extends Application
         HBox internalFunction = new HBox();
 
         internalFunction.setStyle("-fx-background-color:lime;");
-        internalFunction.setPrefHeight(770);
+        internalFunction.setPrefHeight(720);
         internalFunction.setPrefWidth(1550);
         internalFunction.getChildren().addAll(toolsPanel(),ActivePanel(),settingsPanel());
 
         return internalFunction;
     }
 
+    public StackPane currentActive()
+    {
+        StackPane activities = new StackPane();
+
+        activities.setMaxWidth(1120);
+        activities.setMaxHeight(700);
+        activities.setStyle("-fx-background-color:white;");
+
+        return activities;
+    }
 }
