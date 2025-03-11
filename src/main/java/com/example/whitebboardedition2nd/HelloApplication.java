@@ -22,10 +22,9 @@ public class HelloApplication extends Application
 {
     private IntegerProperty penTracker = new SimpleIntegerProperty(0);
     private IntegerProperty eraserTracker = new SimpleIntegerProperty(0);
-    private String colorPickerKeeper = "";
     GraphicsContext graphicsContext = null;
     Slider slider = null;
-    StackPane pane;
+    StackPane pane;//for current display of files and activities
     ColorPicker colorPicker = null;
 
 
