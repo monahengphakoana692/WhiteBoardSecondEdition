@@ -8,7 +8,8 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
-import javafx.scene.control.ScrollPane;
+import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Slider;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -20,6 +21,9 @@ import java.io.IOException;
 public class HelloApplication extends Application
 {
     private IntegerProperty penTracker = new SimpleIntegerProperty(0);
+    private String colorPickerKeeper = "";
+    GraphicsContext graphicsContext = null;
+    Slider slider = null;
 
 
 
@@ -62,21 +66,39 @@ public class HelloApplication extends Application
         toolsSet.setPrefWidth(100);
 
         Image penImage = new Image(getClass().getResourceAsStream("/pen.png"));
+        Image erazeImage = new Image(getClass().getResourceAsStream("/eraser.png"));
         ImageView penTool = new ImageView(penImage);
+        ImageView erasertool = new ImageView(erazeImage);
         penTool.setFitWidth(30);
         penTool.setFitHeight(30);
+        erasertool.setFitWidth(30);
+        erasertool.setFitHeight(20);
 
         Pane toolHolder = new Pane(penTool);
+        Pane eraserHolder = new Pane(erasertool);
+
         toolHolder.setId("toolHolder");
-        toolHolder.setPrefSize(50, 50);
+        toolHolder.setPrefSize(40, 40);
+
+        eraserHolder.setPrefSize(20, 20);
+        eraserHolder.setId("eraserHolder");
 
         // When clicked, update penTracker and change the background color
-        toolHolder.setOnMouseClicked(event -> {
+        toolHolder.setOnMouseClicked(event ->
+        {
             penTracker.set(1);
             toolHolder.setStyle("-fx-background-color:gray;");
+            eraserHolder.setStyle("-fx-background-color:white;");
+
+        });
+        eraserHolder.setOnMouseClicked(event ->
+        {
+            eraserHolder.setStyle("-fx-background-color:gray;");
+            toolHolder.setStyle("-fx-background-color:white;");
         });
 
-        toolsSet.getChildren().add(toolHolder);
+        toolsSet.getChildren().addAll(toolHolder,eraserHolder);
+
         return toolsSet;
     }
 
@@ -94,11 +116,32 @@ public class HelloApplication extends Application
 
     public VBox settingsPanel()//for holding color setting and other setting
     {
-        VBox settings = new VBox();
+        VBox settings = new VBox(20);
 
+        ColorPicker colorPicker = new ColorPicker();
+
+        slider = new Slider();
+        slider.setMax(1);
+        slider.setMax(100);
+        slider.setShowTickLabels(true);
+        slider.setShowTickMarks(true);
+        slider.setMaxWidth(200);
+        colorPicker.setValue(Color.BLACK);
+
+        slider.valueProperty().addListener(event->
+        {
+            graphicsContext.setLineWidth(slider.getValue());
+        });
+        colorPicker.setOnAction(event ->
+        {
+             graphicsContext.setStroke(colorPicker.getValue());
+
+        });
         settings.setId("settings");
         settings.setPrefWidth(300);
         settings.setPrefHeight(770);
+        settings.getChildren().addAll(colorPicker,slider);
+
 
         return settings;
     }
@@ -122,7 +165,6 @@ public class HelloApplication extends Application
     {
         HBox internalFunction = new HBox();
 
-        internalFunction.setStyle("-fx-background-color:lime;");
         internalFunction.setPrefHeight(720);
         internalFunction.setPrefWidth(1550);
         internalFunction.getChildren().addAll(toolsPanel(),ActivePanel(),settingsPanel());
@@ -155,7 +197,7 @@ public class HelloApplication extends Application
     public StackPane drawingAction()
     {
         Canvas canvas = new Canvas(1120, 700); // Set canvas size
-        GraphicsContext graphicsContext = canvas.getGraphicsContext2D();
+        graphicsContext = canvas.getGraphicsContext2D();
 
         graphicsContext.setStroke(Color.BLACK);
         graphicsContext.setLineWidth(2);
