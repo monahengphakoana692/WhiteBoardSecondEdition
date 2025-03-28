@@ -37,6 +37,7 @@ public class HelloApplication extends Application
     Label SaveFile = new Label("SaveFile"); // for saving files on editing board
     Label OpenFiles = new Label("OpenFiles");
     Label OpenMultiMedia = new Label("Pictures");
+    Label OpenMultiMediav = new Label("Videos");
     Stage stage = new Stage();
 
 
@@ -198,11 +199,14 @@ public class HelloApplication extends Application
        OpenMultiMedia.setStyle("-fx-font-size:20px;" +
                "-fx-text-fill:white;" +
                "-fx-spacing:10px;");
+       OpenMultiMediav.setStyle("-fx-font-size:20px;" +
+               "-fx-text-fill:white;" +
+               "-fx-spacing:10px;");
 
        externalFunction.setId("externalFunctions");
        externalFunction.setPrefHeight(40);
        externalFunction.setPrefWidth(1550);
-       externalFunction.getChildren().addAll(textFile, SaveFile, OpenFiles, OpenMultiMedia);
+       externalFunction.getChildren().addAll(textFile, SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav);
 
 
        return externalFunction;
@@ -307,6 +311,37 @@ public class HelloApplication extends Application
             }
         });
         OpenMultiMedia.setOnMouseClicked(event ->
+        {
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
+            fileChooser.setTitle("Open files");
+            File file = fileChooser.showOpenDialog(stage);
+            if(file!=null)
+            {
+                try
+                {
+                    activities.getChildren().clear();
+                    pane = new StackPane();
+                    pane.getChildren().add(new ImageView(new Image(String.valueOf(file))));
+                    activities.getChildren().add(pane);
+
+                    Scanner filereader = new Scanner(file);
+                    while(filereader.hasNextLine())
+                    {
+                        doc.appendText(filereader.next() + " ");
+                    }
+
+                } catch (Exception e)
+                {
+
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+
+        OpenMultiMediav.setOnMouseClicked(event ->
         {
 
             FileChooser fileChooser = new FileChooser();
