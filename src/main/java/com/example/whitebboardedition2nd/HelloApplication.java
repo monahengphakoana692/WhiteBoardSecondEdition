@@ -240,11 +240,13 @@ public class HelloApplication extends Application
 
 
        Button minimizeBtn = new Button("─");
+       minimizeBtn.setId("windowsBtns");
        minimizeBtn.setOnAction(e ->
                stage.setIconified(true));
 
 
        Button maximizeBtn = new Button("□");
+       maximizeBtn.setId("windowsBtns");
        maximizeBtn.setOnAction(e -> {
            if (stage.isMaximized()) {
                stage.setMaximized(false);
@@ -257,6 +259,7 @@ public class HelloApplication extends Application
 
 // Close button
        Button closeBtn = new Button("✕");
+       closeBtn.setId("windowsBtns");
        closeBtn.setOnAction(e -> stage.close());
 
        titleBar.getChildren().addAll(minimizeBtn, maximizeBtn, closeBtn);

@@ -80,4 +80,6 @@
 #windowsBtns:hover
 {
     -fx-cursor:hand;
+    -fx-background-color:red;
+    -fx-size:10px;
 }
