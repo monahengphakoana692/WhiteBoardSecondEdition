@@ -49,6 +49,7 @@ public class HelloApplication extends Application
     Label SaveCanvas = new Label("SaveCanvas");
     Label sound = new Label("Audio");
     Label clearStage = new Label("RemoveActivity");
+    Label newCanvas = new Label("newCanvas");
     Stage stage = new Stage();
     private MediaPlayer mediaPlayer;
     private File lastDirectory = null;
@@ -227,11 +228,19 @@ public class HelloApplication extends Application
        clearStage.setStyle("-fx-font-size:20px;" +
                "-fx-text-fill:white;" +
                "-fx-spacing:10px;");
+       newCanvas.setStyle("-fx-font-size:20px;" +
+               "-fx-text-fill:white;" +
+               "-fx-spacing:10px;");
 
        externalFunction.setId("externalFunctions");
        externalFunction.setPrefHeight(40);
        externalFunction.setPrefWidth(1550);
-       externalFunction.getChildren().addAll(textFile, SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage);
+
+       Image penImage = new Image(getClass().getResourceAsStream("/ps.png"));
+       ImageView ico = new ImageView(penImage);
+       ico.setFitHeight(30);
+       ico.setFitWidth(30);
+       externalFunction.getChildren().addAll( ico,textFile,newCanvas, SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage);
 
 
        return externalFunction;
@@ -260,7 +269,7 @@ public class HelloApplication extends Application
 
         penTracker.addListener((obs, oldVal, newVal) ->
         {
-            activities.getChildren().clear(); // Clear previous content
+            //activities.getChildren().clear(); // Clear previous content
             if (newVal.intValue() == 1)
             {
                 activities.getChildren().add(drawingAction()); // Add drawing area dynamically
@@ -279,6 +288,10 @@ public class HelloApplication extends Application
             doc.setText("type something");
             pane.getChildren().add(doc);
             activities.getChildren().add(pane);
+        });
+        newCanvas.setOnMouseClicked(event -> {
+
+           activities.getChildren().add(drawingImage());
         });
 
         SaveFile.setOnMouseClicked(event ->
@@ -319,6 +332,7 @@ public class HelloApplication extends Application
                 {
                     activities.getChildren().clear();
                     pane = new StackPane();
+                    doc.setText("");
                     pane.getChildren().add(doc);
                     activities.getChildren().add(pane);
 
@@ -337,8 +351,6 @@ public class HelloApplication extends Application
         });
         OpenMultiMediav.setOnMouseClicked(event ->
         {
-
-
 
             openVideoMediaFile();
         });
@@ -387,6 +399,8 @@ public class HelloApplication extends Application
         });
         clearStage.setOnMouseClicked(event -> {
             activities.getChildren().clear();
+            mediaPlayer.stop();
+            mediaPlayer = null;
         });
 
         return activities;
@@ -418,6 +432,70 @@ public class HelloApplication extends Application
 
 
         pane.getChildren().add(canvas);
+
+        return pane;
+    }
+
+    public StackPane drawingImage()
+    {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"),
+                new FileChooser.ExtensionFilter("All Files", "*.*")
+        );
+        fileChooser.setTitle("Open Image File");
+        File file = fileChooser.showOpenDialog(stage);
+
+        if (file != null) {
+            try {
+                activities.getChildren().clear();
+
+                // Load the image
+                Image image = new Image(file.toURI().toString());
+                ImageView imageView = new ImageView(image);
+
+                // Create canvas with same dimensions as image
+                Canvas drawingCanvas = new Canvas(image.getWidth(), image.getHeight());
+                GraphicsContext gc = drawingCanvas.getGraphicsContext2D();
+
+                // Set up drawing tools
+                gc.setStroke(Color.BLACK);
+                gc.setLineWidth(2);
+
+                // Create a stack pane to layer image and canvas
+                StackPane imageCanvasPane = new StackPane();
+                imageCanvasPane.getChildren().addAll(imageView, drawingCanvas);
+
+                // Set up mouse events for drawing
+                drawingCanvas.setOnMousePressed(e -> {
+                    gc.beginPath();
+                    gc.moveTo(e.getX(), e.getY());
+                    gc.stroke();
+                });
+
+                drawingCanvas.setOnMouseDragged(e -> {
+                    gc.lineTo(e.getX(), e.getY());
+                    gc.stroke();
+
+                });
+
+
+                // Add to main activities pane
+                pane = new StackPane(imageCanvasPane);
+                activities.getChildren().add(pane);
+                activities.setAlignment(Pos.CENTER);
+
+                // Connect with existing drawing tools
+                colorPicker.setOnAction(e -> gc.setStroke(colorPicker.getValue()));
+                slider.valueProperty().addListener((obs, oldVal, newVal) ->
+                        gc.setLineWidth(newVal.doubleValue()));
+
+            } catch (Exception e) {
+                new Alert(Alert.AlertType.ERROR, "Error loading image: " + e.getMessage()).show();
+            }
+        }
+
 
         return pane;
     }
