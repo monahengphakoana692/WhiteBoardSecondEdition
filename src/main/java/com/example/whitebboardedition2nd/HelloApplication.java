@@ -11,9 +11,12 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.media.MediaPlayer;
+import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import javafx.scene.media.Media;
 import javafx.stage.StageStyle;
 
 import java.io.File;
@@ -310,8 +313,10 @@ public class HelloApplication extends Application
                 }
             }
         });
-        OpenMultiMedia.setOnMouseClicked(event ->
+        OpenMultiMediav.setOnMouseClicked(event ->
         {
+            MediaPlayer videoplayer = null;
+
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
@@ -320,11 +325,17 @@ public class HelloApplication extends Application
             File file = fileChooser.showOpenDialog(stage);
             if(file!=null)
             {
+                Media video = new Media(file.toURI().toString());
+                videoplayer = new MediaPlayer(video);
+                MediaView viewVideo = new MediaView(videoplayer);
+                viewVideo.setFitHeight(700);
+                viewVideo.setFitWidth(800);
+                videoplayer.play();
                 try
                 {
                     activities.getChildren().clear();
                     pane = new StackPane();
-                    pane.getChildren().add(new ImageView(new Image(String.valueOf(file))));
+                    pane.getChildren().add(viewVideo);
                     activities.getChildren().add(pane);
 
                     Scanner filereader = new Scanner(file);
@@ -341,7 +352,7 @@ public class HelloApplication extends Application
             }
         });
 
-        OpenMultiMediav.setOnMouseClicked(event ->
+        OpenMultiMedia.setOnMouseClicked(event ->
         {
 
             FileChooser fileChooser = new FileChooser();
@@ -353,6 +364,7 @@ public class HelloApplication extends Application
             {
                 try
                 {
+
                     activities.getChildren().clear();
                     pane = new StackPane();
                     pane.getChildren().add(new ImageView(new Image(String.valueOf(file))));
