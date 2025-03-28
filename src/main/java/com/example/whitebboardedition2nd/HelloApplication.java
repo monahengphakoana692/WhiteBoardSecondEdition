@@ -49,7 +49,7 @@ public class HelloApplication extends Application
     Label SaveCanvas = new Label("SaveCanvas");
     Label sound = new Label("Audio");
     Label clearStage = new Label("RemoveActivity");
-    Label newCanvas = new Label("newCanvas");
+    Label newCanvas = new Label("EditCanvas");
     Stage stage = new Stage();
     private MediaPlayer mediaPlayer;
     private File lastDirectory = null;
@@ -76,6 +76,8 @@ public class HelloApplication extends Application
 
 
         setPage(stage,new Scene(root,1400,700));
+
+
     }
 
     public static void main(String[] args) {
@@ -85,6 +87,7 @@ public class HelloApplication extends Application
     void setPage(Stage stage, Scene scene)//this is for displaying scenes
     {
         stage.setScene(scene);
+
         externalFunction.setOnMousePressed(event -> {
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
@@ -108,18 +111,18 @@ public class HelloApplication extends Application
         Image erazeImage = new Image(getClass().getResourceAsStream("/eraser.png"));
         ImageView penTool = new ImageView(penImage);
         ImageView erasertool = new ImageView(erazeImage);
-        penTool.setFitWidth(30);
-        penTool.setFitHeight(30);
-        erasertool.setFitWidth(30);
-        erasertool.setFitHeight(20);
+        penTool.setFitWidth(40);
+        penTool.setFitHeight(40);
+        erasertool.setFitWidth(40);
+        erasertool.setFitHeight(40);
 
         Pane toolHolder = new Pane(penTool);
         Pane eraserHolder = new Pane(erasertool);
 
         toolHolder.setId("toolHolder");
-        toolHolder.setPrefSize(40, 40);
+        toolHolder.setPrefSize(20, 40);
 
-        eraserHolder.setPrefSize(20, 20);
+        eraserHolder.setPrefSize(20, 40);
         eraserHolder.setId("eraserHolder");
 
         // When clicked, update penTracker and change the background color
@@ -240,7 +243,35 @@ public class HelloApplication extends Application
        ImageView ico = new ImageView(penImage);
        ico.setFitHeight(30);
        ico.setFitWidth(30);
-       externalFunction.getChildren().addAll( ico,textFile,newCanvas, SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage);
+       HBox titleBar = new HBox();
+       titleBar.setStyle("-fx-background-color: #5b5b5b; -fx-padding: 5;");
+       titleBar.setAlignment(Pos.CENTER_RIGHT);
+
+
+       Button minimizeBtn = new Button("─");
+       minimizeBtn.setOnAction(e ->
+               stage.setIconified(true));
+
+
+       Button maximizeBtn = new Button("□");
+       maximizeBtn.setOnAction(e -> {
+           if (stage.isMaximized()) {
+               stage.setMaximized(false);
+               maximizeBtn.setText("□");
+           } else {
+               stage.setMaximized(true);
+               maximizeBtn.setText("❐");
+           }
+       });
+
+// Close button
+       Button closeBtn = new Button("✕");
+       closeBtn.setOnAction(e -> stage.close());
+
+       titleBar.getChildren().addAll(minimizeBtn, maximizeBtn, closeBtn);
+       titleBar.setStyle("-fx-spacing:20px;");
+       externalFunction.getChildren().addAll( ico,textFile,newCanvas, SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage,titleBar);
+       externalFunction.setStyle("-fx-spacing:50px;");
 
 
        return externalFunction;
