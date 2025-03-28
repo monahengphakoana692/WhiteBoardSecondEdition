@@ -19,6 +19,7 @@ import javafx.stage.StageStyle;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Scanner;
 
 public class HelloApplication extends Application
 {
@@ -275,13 +276,22 @@ public class HelloApplication extends Application
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
-            fileChooser.setTitle("save files");
-            File file = fileChooser.showSaveDialog(stage);
+            fileChooser.setTitle("Open files");
+            File file = fileChooser.showOpenDialog(stage);
             if(file!=null)
             {
                 try
                 {
+                    activities.getChildren().clear();
+                    pane = new StackPane();
+                    pane.getChildren().add(doc);
+                    activities.getChildren().add(pane);
 
+                    Scanner filereader = new Scanner(file);
+                    while(filereader.hasNextLine())
+                    {
+                        doc.appendText(filereader.next() + " ");
+                    }
 
                 } catch (Exception e)
                 {
