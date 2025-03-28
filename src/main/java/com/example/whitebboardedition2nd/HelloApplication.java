@@ -36,6 +36,7 @@ public class HelloApplication extends Application
     Label textFile = new Label("NewFile");//for creating text file
     Label SaveFile = new Label("SaveFile"); // for saving files on editing board
     Label OpenFiles = new Label("OpenFiles");
+    Label OpenMultiMedia = new Label("Pictures");
     Stage stage = new Stage();
 
 
@@ -189,14 +190,19 @@ public class HelloApplication extends Application
        SaveFile.setStyle("-fx-font-size:20px;" +
                "-fx-text-fill:white;" +
                "-fx-spacing:10px;");
+
        OpenFiles.setStyle("-fx-font-size:20px;" +
+               "-fx-text-fill:white;" +
+               "-fx-spacing:10px;");
+
+       OpenMultiMedia.setStyle("-fx-font-size:20px;" +
                "-fx-text-fill:white;" +
                "-fx-spacing:10px;");
 
        externalFunction.setId("externalFunctions");
        externalFunction.setPrefHeight(40);
        externalFunction.setPrefWidth(1550);
-       externalFunction.getChildren().addAll(textFile, SaveFile, OpenFiles);
+       externalFunction.getChildren().addAll(textFile, SaveFile, OpenFiles, OpenMultiMedia);
 
 
        return externalFunction;
@@ -285,6 +291,36 @@ public class HelloApplication extends Application
                     activities.getChildren().clear();
                     pane = new StackPane();
                     pane.getChildren().add(doc);
+                    activities.getChildren().add(pane);
+
+                    Scanner filereader = new Scanner(file);
+                    while(filereader.hasNextLine())
+                    {
+                        doc.appendText(filereader.next() + " ");
+                    }
+
+                } catch (Exception e)
+                {
+
+                    throw new RuntimeException(e);
+                }
+            }
+        });
+        OpenMultiMedia.setOnMouseClicked(event ->
+        {
+
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
+            fileChooser.setTitle("Open files");
+            File file = fileChooser.showOpenDialog(stage);
+            if(file!=null)
+            {
+                try
+                {
+                    activities.getChildren().clear();
+                    pane = new StackPane();
+                    pane.getChildren().add(new ImageView(new Image(String.valueOf(file))));
                     activities.getChildren().add(pane);
 
                     Scanner filereader = new Scanner(file);
