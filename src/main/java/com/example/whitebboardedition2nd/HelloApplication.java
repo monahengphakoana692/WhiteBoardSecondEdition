@@ -12,9 +12,11 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import java.io.File;
 import java.io.IOException;
 
 public class HelloApplication extends Application
@@ -29,13 +31,14 @@ public class HelloApplication extends Application
     private double xOffset = 0;//for dragging the stage
     private double yOffset = 0;//for dragging the stage
     private TextArea doc = new TextArea();//for typing text to be saved
-    Label textFile = new Label("New Text File");//for creating text file
-
+    Label textFile = new Label("NewFile");//for creating text file
+    Label SaveFile = new Label("SaveFile"); // for saving files on editing board
+    Stage stage = new Stage();
 
 
 
     @Override
-    public void start(Stage stage) throws IOException
+    public void start(Stage stages) throws IOException
     {
         stage.initStyle(StageStyle.UNDECORATED);
         FlowPane root = new FlowPane();//setting flow for resizing scene
@@ -177,22 +180,17 @@ public class HelloApplication extends Application
    {
 
 
-
-       Label SaveFile = new Label("File");
-
-
        textFile.setStyle("-fx-font-size:20px;" +
                "-fx-text-fill:white;" +
                "-fx-spacing:10px;");
-
-
-
-
+       SaveFile.setStyle("-fx-font-size:20px;" +
+               "-fx-text-fill:white;" +
+               "-fx-spacing:10px;");
 
        externalFunction.setId("externalFunctions");
        externalFunction.setPrefHeight(40);
        externalFunction.setPrefWidth(1550);
-       externalFunction.getChildren().add(textFile);
+       externalFunction.getChildren().addAll(textFile, SaveFile);
 
 
        return externalFunction;
@@ -222,8 +220,10 @@ public class HelloApplication extends Application
         penTracker.addListener((obs, oldVal, newVal) ->
         {
             activities.getChildren().clear(); // Clear previous content
-            if (newVal.intValue() == 1) {
+            if (newVal.intValue() == 1)
+            {
                 activities.getChildren().add(drawingAction()); // Add drawing area dynamically
+
             }
         });
 
@@ -231,7 +231,8 @@ public class HelloApplication extends Application
         {
 
         });
-        textFile.setOnMouseClicked(event -> {
+        textFile.setOnMouseClicked(event ->
+        {
             activities.getChildren().clear();
             pane = new StackPane();
             doc.setText("type something");
@@ -239,6 +240,13 @@ public class HelloApplication extends Application
             activities.getChildren().add(pane);
         });
 
+        SaveFile.setOnMouseClicked(event ->
+        {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
+            fileChooser.setTitle("save files");
+            File file = fileChooser.showSaveDialog(stage);
+        });
 
 
 
