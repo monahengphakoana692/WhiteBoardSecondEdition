@@ -15,6 +15,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
@@ -33,6 +34,7 @@ public class HelloApplication extends Application
     @Override
     public void start(Stage stage) throws IOException
     {
+        stage.initStyle(StageStyle.UNDECORATED);
         FlowPane root = new FlowPane();//setting flow for resizing scene
         VBox    mainLayout = new VBox();
 
@@ -46,7 +48,7 @@ public class HelloApplication extends Application
         root.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
 
 
-        setPage(stage,new Scene(root,1520,800));
+        setPage(stage,new Scene(root,1400,700));
     }
 
     public static void main(String[] args) {
@@ -64,8 +66,8 @@ public class HelloApplication extends Application
     {
         VBox toolsSet = new VBox();
         toolsSet.setId("toolPanel");
-        toolsSet.setPrefHeight(770);
-        toolsSet.setPrefWidth(100);
+        toolsSet.setPrefHeight(600);
+        toolsSet.setPrefWidth(70);
 
         Image penImage = new Image(getClass().getResourceAsStream("/pen.png"));
         Image erazeImage = new Image(getClass().getResourceAsStream("/eraser.png"));
@@ -121,7 +123,7 @@ public class HelloApplication extends Application
         StackPane actionPanel = new StackPane();
 
         actionPanel.setId("actionPanel");
-        actionPanel.setPrefWidth(1300);
+        actionPanel.setPrefWidth(1130);
         actionPanel.getChildren().add(currentActive());
 
         return actionPanel;
@@ -178,7 +180,7 @@ public class HelloApplication extends Application
     {
         HBox internalFunction = new HBox();
 
-        internalFunction.setPrefHeight(720);
+        internalFunction.setPrefHeight(620);
         internalFunction.setPrefWidth(1550);
         internalFunction.getChildren().addAll(toolsPanel(),ActivePanel(),settingsPanel());
 
@@ -190,8 +192,8 @@ public class HelloApplication extends Application
         StackPane activities;
 
         activities = new StackPane();
-        activities.setMaxWidth(1120);
-        activities.setMaxHeight(700);
+        activities.setMaxWidth(1000);
+        activities.setMaxHeight(530);
         activities.setId("currentActive");
 
 
@@ -214,7 +216,7 @@ public class HelloApplication extends Application
 
     public StackPane drawingAction()
     {
-        Canvas canvas = new Canvas(1120, 700); // Set canvas size
+        Canvas canvas = new Canvas(1000, 530); // Set canvas size
         graphicsContext = canvas.getGraphicsContext2D();
 
         graphicsContext.setStroke(Color.BLACK);
