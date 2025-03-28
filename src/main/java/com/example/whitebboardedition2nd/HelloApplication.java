@@ -259,7 +259,7 @@ public class HelloApplication extends Application
             fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
             fileChooser.setTitle("save files");
-            File file = fileChooser.showOpenDialog(stage);
+            File file = fileChooser.showSaveDialog(stage);
             if(file!=null)
             {
                 try
