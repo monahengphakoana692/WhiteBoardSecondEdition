@@ -48,6 +48,7 @@ public class HelloApplication extends Application
     Label OpenMultiMediav = new Label("Videos");
     Label SaveCanvas = new Label("SaveCanvas");
     Label sound = new Label("Audio");
+    Label clearStage = new Label("RemoveActivity");
     Stage stage = new Stage();
     private MediaPlayer mediaPlayer;
     private File lastDirectory = null;
@@ -223,11 +224,14 @@ public class HelloApplication extends Application
        sound.setStyle("-fx-font-size:20px;" +
                "-fx-text-fill:white;" +
                "-fx-spacing:10px;");
+       clearStage.setStyle("-fx-font-size:20px;" +
+               "-fx-text-fill:white;" +
+               "-fx-spacing:10px;");
 
        externalFunction.setId("externalFunctions");
        externalFunction.setPrefHeight(40);
        externalFunction.setPrefWidth(1550);
-       externalFunction.getChildren().addAll(textFile, SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound);
+       externalFunction.getChildren().addAll(textFile, SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage);
 
 
        return externalFunction;
@@ -336,39 +340,7 @@ public class HelloApplication extends Application
 
 
 
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
-            fileChooser.setTitle("Open files");
-            File file = fileChooser.showOpenDialog(stage);
-            if(file!=null)
-            {
-                Media video = new Media(file.toURI().toString());
-
-                mediaPlayer  = new MediaPlayer(video);
-                MediaView viewVideo = new MediaView(mediaPlayer);
-                viewVideo.setFitHeight(700);
-                viewVideo.setFitWidth(800);
-                mediaPlayer.play();
-                try
-                {
-                    activities.getChildren().clear();
-                    pane = new StackPane();
-                    pane.getChildren().add(viewVideo);
-                    activities.getChildren().add(pane);
-
-                    Scanner filereader = new Scanner(file);
-                    while(filereader.hasNextLine())
-                    {
-                        doc.appendText(filereader.next() + " ");
-                    }
-
-                } catch (Exception e)
-                {
-
-                    throw new RuntimeException(e);
-                }
-            }
+            openVideoMediaFile();
         });
 
         OpenMultiMedia.setOnMouseClicked(event ->
@@ -412,6 +384,9 @@ public class HelloApplication extends Application
         {
             pane = new StackPane();
             openMediaFile();
+        });
+        clearStage.setOnMouseClicked(event -> {
+            activities.getChildren().clear();
         });
 
         return activities;
@@ -516,8 +491,49 @@ public class HelloApplication extends Application
         }
 
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Media Files", "*.mp3","*.mp4" ,"*.wav"),
-                new FileChooser.ExtensionFilter("All Files", "*.*")
+                new FileChooser.ExtensionFilter("Media Files", "*.mp3")
+
+        );
+        fileChooser.setTitle("Open sound File");
+
+        File file = fileChooser.showOpenDialog(stage);
+
+        if (file != null) {
+            try {
+                // Remember the directory for next time
+                lastDirectory = file.getParentFile();
+
+                // Clean up previous media player if exists
+                if (mediaPlayer != null) {
+                    mediaPlayer.stop();
+                    mediaPlayer.dispose();
+                }
+
+                // Setup new MediaPlayer
+                Media media = new Media(file.toURI().toString());
+                mediaPlayer = new MediaPlayer(media);
+                setupMediaPlayerUI();
+
+            } catch (Exception e) {
+                showErrorAlert("Error loading media", e.getMessage());
+                //createInitialUI();
+            }
+        }
+    }
+
+    private void openVideoMediaFile() {
+        FileChooser fileChooser = new FileChooser();
+
+        // Set initial directory (use last directory if available, or user home directory)
+        if (lastDirectory != null && lastDirectory.exists()) {
+            fileChooser.setInitialDirectory(lastDirectory);
+        } else {
+            fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
+        }
+
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Media Files", "*.mp4")
+
         );
         fileChooser.setTitle("Open sound File");
 
@@ -563,7 +579,8 @@ public class HelloApplication extends Application
         }
     }
 
-    private String formatTime(Duration duration) {
+    private String formatTime(Duration duration)
+    {
         int minutes = (int) duration.toMinutes();
         int seconds = (int) duration.toSeconds() % 60;
         return String.format("%02d:%02d", minutes, seconds);
@@ -584,13 +601,13 @@ public class HelloApplication extends Application
         VBox audio = new VBox();
         audio.setPrefHeight(20);
         audio.setPrefWidth(30);
-        audio.setStyle("-fx-background-color:black;");
+
 
 
         // Media View
         MediaView mediaView = new MediaView(mediaPlayer);
-        mediaView.setFitWidth(50);
-        mediaView.setFitHeight(20);
+        mediaView.setFitWidth(600);
+        mediaView.setFitHeight(500);
         mediaView.setPreserveRatio(true);
 
         // Volume Slider
@@ -659,5 +676,7 @@ public class HelloApplication extends Application
         activities.getChildren().add(tempHolder);
         mediaPlayer.play();
     }
+
+
 
 }
