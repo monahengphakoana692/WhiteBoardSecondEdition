@@ -18,6 +18,7 @@ import javafx.stage.StageStyle;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class HelloApplication extends Application
 {
@@ -246,6 +247,20 @@ public class HelloApplication extends Application
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
             fileChooser.setTitle("save files");
             File file = fileChooser.showSaveDialog(stage);
+            if(file!=null)
+            {
+                try
+                {
+                    fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
+                    PrintStream print = new PrintStream(file);
+                    print.println(doc.getText());
+                    print.flush();
+                } catch (Exception e)
+                {
+
+                    throw new RuntimeException(e);
+                }
+            }
         });
 
 
