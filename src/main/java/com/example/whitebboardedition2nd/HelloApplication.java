@@ -34,6 +34,7 @@ public class HelloApplication extends Application
     private TextArea doc = new TextArea();//for typing text to be saved
     Label textFile = new Label("NewFile");//for creating text file
     Label SaveFile = new Label("SaveFile"); // for saving files on editing board
+    Label OpenFiles = new Label("OpenFiles");
     Stage stage = new Stage();
 
 
@@ -187,11 +188,14 @@ public class HelloApplication extends Application
        SaveFile.setStyle("-fx-font-size:20px;" +
                "-fx-text-fill:white;" +
                "-fx-spacing:10px;");
+       OpenFiles.setStyle("-fx-font-size:20px;" +
+               "-fx-text-fill:white;" +
+               "-fx-spacing:10px;");
 
        externalFunction.setId("externalFunctions");
        externalFunction.setPrefHeight(40);
        externalFunction.setPrefWidth(1550);
-       externalFunction.getChildren().addAll(textFile, SaveFile);
+       externalFunction.getChildren().addAll(textFile, SaveFile, OpenFiles);
 
 
        return externalFunction;
@@ -248,7 +252,7 @@ public class HelloApplication extends Application
             fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
             fileChooser.setTitle("save files");
-            File file = fileChooser.showSaveDialog(stage);
+            File file = fileChooser.showOpenDialog(stage);
             if(file!=null)
             {
                 try
@@ -265,7 +269,27 @@ public class HelloApplication extends Application
             }
         });
 
+        OpenFiles.setOnMouseClicked(event ->
+        {
 
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
+            fileChooser.setTitle("save files");
+            File file = fileChooser.showSaveDialog(stage);
+            if(file!=null)
+            {
+                try
+                {
+
+
+                } catch (Exception e)
+                {
+
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
         return activities;
     }
