@@ -54,7 +54,7 @@ public class HelloApplication extends Application
     private MediaPlayer mediaPlayer;
     private File lastDirectory = null;
     StackPane activities;
-
+    ImageView musicImage;//image displayed when music play
 
 
 
@@ -231,7 +231,7 @@ public class HelloApplication extends Application
        externalFunction.setPrefWidth(1550);
 
        Image penImage = new Image(getClass().getResourceAsStream("/ps.png"));
-       ImageView ico = new ImageView(penImage);
+       ImageView ico = new ImageView(penImage);//icon of the app
        ico.setFitHeight(30);
        ico.setFitWidth(30);
        HBox titleBar = new HBox();
@@ -644,6 +644,8 @@ public class HelloApplication extends Application
 
         if (file != null) {
             try {
+
+
                 // Remember the directory for next time
                 lastDirectory = file.getParentFile();
 
@@ -663,6 +665,8 @@ public class HelloApplication extends Application
                 //createInitialUI();
             }
         }
+
+        musicImage.setStyle("-fx-opacity:0px;");//disabling the music image when video places
     }
 
     private void showErrorAlert(String title, String message) {
@@ -739,7 +743,9 @@ public class HelloApplication extends Application
 
         // Play/Pause Button
         Button playButton = new Button("▶");
-        playButton.setOnAction(e -> togglePlayPause(playButton));
+        playButton.setOnAction(e ->
+                togglePlayPause(playButton)
+        );
 
         // Stop Button
         Button stopButton = new Button("⏹");
@@ -750,7 +756,9 @@ public class HelloApplication extends Application
 
         // Time Labels
         Label currentTimeLabel = new Label("00:00");
+        currentTimeLabel.setStyle("-fx-text-fill:white;");
         Label totalTimeLabel = new Label("00:00");
+        totalTimeLabel.setStyle("-fx-text-fill:white;");
 
         // Update time labels
         mediaPlayer.currentTimeProperty().addListener((obs, oldVal, newVal) -> {
@@ -764,13 +772,20 @@ public class HelloApplication extends Application
         // Control Layout
         HBox timeBox = new HBox(10, currentTimeLabel, progressSlider, totalTimeLabel);
         timeBox.setAlignment(Pos.CENTER);
-
-        HBox controlBox = new HBox(10, playButton, stopButton, new Label("Volume:"), volumeSlider);
+        Label vol =  new Label("Volume:");
+        vol.setStyle("-fx-text-fill:white;");
+        HBox controlBox = new HBox(10, playButton, stopButton, vol, volumeSlider);
         controlBox.setAlignment(Pos.CENTER);
+        Image penImage = new Image(getClass().getResourceAsStream("/headsets.jpg"));
+        musicImage = new ImageView(penImage);
+        musicImage.setFitWidth(80);
+        musicImage.setFitHeight(80);
 
-        VBox mediaContainer = new VBox(10, mediaView, timeBox, controlBox);
+        VBox mediaContainer = new VBox( mediaView, musicImage,timeBox, controlBox);
         mediaContainer.setAlignment(Pos.CENTER);
-        mediaContainer.setPadding(new Insets(10));
+        //mediaContainer.setPadding(new Insets(10));
+        mediaContainer.setPrefWidth(100);
+        mediaContainer.setPrefHeight(30);
 
         audio.getChildren().add(mediaContainer);
         VBox tempHolder = new VBox(audio);
