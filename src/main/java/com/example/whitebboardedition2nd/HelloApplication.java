@@ -243,7 +243,9 @@ public class HelloApplication extends Application
 
         SaveFile.setOnMouseClicked(event ->
         {
+
             FileChooser fileChooser = new FileChooser();
+            fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
             fileChooser.setTitle("save files");
             File file = fileChooser.showSaveDialog(stage);
@@ -251,7 +253,7 @@ public class HelloApplication extends Application
             {
                 try
                 {
-                    fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
+
                     PrintStream print = new PrintStream(file);
                     print.println(doc.getText());
                     print.flush();
