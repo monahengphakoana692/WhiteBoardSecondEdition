@@ -204,36 +204,27 @@ public class HelloApplication extends Application
    {
 
 
-       textFile.setStyle("-fx-font-size:20px;" +
-               "-fx-text-fill:white;" +
-               "-fx-spacing:10px;");
-       SaveFile.setStyle("-fx-font-size:20px;" +
-               "-fx-text-fill:white;" +
-               "-fx-spacing:10px;");
 
-       OpenFiles.setStyle("-fx-font-size:20px;" +
-               "-fx-text-fill:white;" +
-               "-fx-spacing:10px;");
+       textFile.setId("ExLabels");
 
-       OpenMultiMedia.setStyle("-fx-font-size:20px;" +
-               "-fx-text-fill:white;" +
-               "-fx-spacing:10px;");
-       OpenMultiMediav.setStyle("-fx-font-size:20px;" +
-               "-fx-text-fill:white;" +
-               "-fx-spacing:10px;");
-       SaveCanvas.setStyle("-fx-font-size:20px;" +
-               "-fx-text-fill:white;" +
-               "-fx-spacing:10px;");
+       SaveFile.setId("ExLabels");
 
-       sound.setStyle("-fx-font-size:20px;" +
-               "-fx-text-fill:white;" +
-               "-fx-spacing:10px;");
-       clearStage.setStyle("-fx-font-size:20px;" +
-               "-fx-text-fill:white;" +
-               "-fx-spacing:10px;");
-       newCanvas.setStyle("-fx-font-size:20px;" +
-               "-fx-text-fill:white;" +
-               "-fx-spacing:10px;");
+
+       OpenFiles.setId("ExLabels");
+
+
+       OpenMultiMedia.setId("ExLabels");
+
+       OpenMultiMediav.setId("ExLabels");
+
+       SaveCanvas.setId("ExLabels");
+
+
+       sound.setId("ExLabels");
+
+       clearStage.setId("ExLabels");
+
+       newCanvas.setId("ExLabels");
 
        externalFunction.setId("externalFunctions");
        externalFunction.setPrefHeight(40);
@@ -269,7 +260,7 @@ public class HelloApplication extends Application
        closeBtn.setOnAction(e -> stage.close());
 
        titleBar.getChildren().addAll(minimizeBtn, maximizeBtn, closeBtn);
-       titleBar.setStyle("-fx-spacing:20px;");
+       titleBar.setId("windowsBtns");
        externalFunction.getChildren().addAll( ico,textFile,newCanvas, SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage,titleBar);
        externalFunction.setStyle("-fx-spacing:50px;");
 
