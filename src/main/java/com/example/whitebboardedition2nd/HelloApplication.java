@@ -7,9 +7,7 @@ import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.ColorPicker;
-import javafx.scene.control.Slider;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -27,6 +25,11 @@ public class HelloApplication extends Application
     Slider slider = null;
     StackPane pane;//for current display of files and activities
     ColorPicker colorPicker = null;
+    HBox externalFunction = new HBox();
+    private double xOffset = 0;//for dragging the stage
+    private double yOffset = 0;//for dragging the stage
+    private TextArea doc = new TextArea();//for typing text to be saved
+    Label textFile = new Label("New Text File");//for creating text file
 
 
 
@@ -58,6 +61,14 @@ public class HelloApplication extends Application
     void setPage(Stage stage, Scene scene)//this is for displaying scenes
     {
         stage.setScene(scene);
+        externalFunction.setOnMousePressed(event -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
+        });
+        externalFunction.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() - xOffset);
+            stage.setY(event.getScreenY() - yOffset);
+        });
         stage.setTitle("Multimedia");
         stage.show();
     }
@@ -126,6 +137,7 @@ public class HelloApplication extends Application
         actionPanel.setPrefWidth(1130);
         actionPanel.getChildren().add(currentActive());
 
+
         return actionPanel;
     }
 
@@ -163,15 +175,25 @@ public class HelloApplication extends Application
 
    public HBox externalFunctions()//this is for external source
    {
-       HBox externalFunction = new HBox();
 
-       Button upload = new Button("Upload");
+
+
+       Label SaveFile = new Label("File");
+
+
+       textFile.setStyle("-fx-font-size:20px;" +
+               "-fx-text-fill:white;" +
+               "-fx-spacing:10px;");
+
+
+
 
 
        externalFunction.setId("externalFunctions");
        externalFunction.setPrefHeight(40);
        externalFunction.setPrefWidth(1550);
-       externalFunction.getChildren().add(upload);
+       externalFunction.getChildren().add(textFile);
+
 
        return externalFunction;
    }
@@ -209,6 +231,15 @@ public class HelloApplication extends Application
         {
 
         });
+        textFile.setOnMouseClicked(event -> {
+            activities.getChildren().clear();
+            pane = new StackPane();
+            doc.setText("type something");
+            pane.getChildren().add(doc);
+            activities.getChildren().add(pane);
+        });
+
+
 
 
         return activities;
