@@ -3,7 +3,6 @@ package com.example.whitebboardedition2nd;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
@@ -55,6 +54,7 @@ public class HelloApplication extends Application
     private File lastDirectory = null;
     StackPane activities;
     ImageView musicImage;//image displayed when music play
+    MediaView mediaView;
 
 
 
@@ -624,7 +624,8 @@ public class HelloApplication extends Application
         }
     }
 
-    private void openVideoMediaFile() {
+    private void openVideoMediaFile()
+    {
         FileChooser fileChooser = new FileChooser();
 
         // Set initial directory (use last directory if available, or user home directory)
@@ -667,6 +668,7 @@ public class HelloApplication extends Application
         }
 
         musicImage.setStyle("-fx-opacity:0px;");//disabling the music image when video places
+        mediaView.setId("mediaView");
     }
 
     private void showErrorAlert(String title, String message) {
@@ -712,10 +714,11 @@ public class HelloApplication extends Application
 
 
         // Media View
-        MediaView mediaView = new MediaView(mediaPlayer);
+        mediaView = new MediaView(mediaPlayer);
         mediaView.setFitWidth(600);
         mediaView.setFitHeight(500);
         mediaView.setPreserveRatio(true);
+
 
         // Volume Slider
         Slider volumeSlider = new Slider(0, 1, 0.5);
@@ -783,7 +786,6 @@ public class HelloApplication extends Application
 
         VBox mediaContainer = new VBox( mediaView, musicImage,timeBox, controlBox);
         mediaContainer.setAlignment(Pos.CENTER);
-        //mediaContainer.setPadding(new Insets(10));
         mediaContainer.setPrefWidth(100);
         mediaContainer.setPrefHeight(30);
 

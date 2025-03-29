@@ -99,3 +99,20 @@
     -fx-background-color:red;
     -fx-size:10px;
 }
+
+#mediaView
+{
+     -fx-border-color: #3498db;
+        -fx-border-width: 3px;
+        -fx-border-radius: 5px;
+        -fx-background-color: black;
+        -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.8), 80, 0, 0, 0);
+
+}
+
+#mediaView:hover
+{
+    -fx-cursor:hand;
+    -fx-border-radius:40px;
+}
+
