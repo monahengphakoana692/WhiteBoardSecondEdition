@@ -16,6 +16,7 @@ import javafx.scene.layout.*;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.scene.media.Media;
@@ -55,6 +56,8 @@ public class HelloApplication extends Application
     StackPane activities;
     ImageView musicImage;//image displayed when music play
     MediaView mediaView;
+    private double startX, startY;
+    private Rectangle selectionRect;
 
 
 
@@ -797,6 +800,62 @@ public class HelloApplication extends Application
         mediaPlayer.play();
     }
 
+    public void CreateText()
+    {
+        selectionRect = new Rectangle();
+        selectionRect.setFill(Color.LIGHTBLUE.deriveColor(0, 1, 1, 0.5));
+        selectionRect.setStroke(Color.BLUE);
+        selectionRect.setVisible(false);
+        activities.getChildren().add(selectionRect);
 
+        activities.setOnMousePressed(e -> {
+            startX = e.getX();
+            startY = e.getY();
+
+            // Initialize selection rectangle
+            selectionRect.setX(startX);
+            selectionRect.setY(startY);
+            selectionRect.setWidth(0);
+            selectionRect.setHeight(0);
+            selectionRect.setVisible(true);
+        });
+
+        activities.setOnMouseDragged(e -> {
+            // Update selection rectangle dimensions during drag
+            double x = Math.min(startX, e.getX());
+            double y = Math.min(startY, e.getY());
+            double width = Math.abs(e.getX() - startX);
+            double height = Math.abs(e.getY() - startY);
+
+            selectionRect.setX(x);
+            selectionRect.setY(y);
+            selectionRect.setWidth(width);
+            selectionRect.setHeight(height);
+        });
+
+        activities.setOnMouseReleased(e -> {
+            selectionRect.setVisible(false);
+
+            // Only create text field if drag was significant
+            if (selectionRect.getWidth() > 10 && selectionRect.getHeight() > 10) {
+                createTextField(selectionRect.getX(), selectionRect.getY(),
+                        selectionRect.getWidth(), selectionRect.getHeight());
+            }
+        });
+    }
+
+    private void createTextField(double x, double y, double width, double height) {
+        TextField textField = new TextField();
+        textField.setLayoutX(x);
+        textField.setLayoutY(y);
+        textField.setPrefWidth(width);
+        textField.setPrefHeight(height);
+
+        // Add to the root pane
+        ((Pane) selectionRect.getParent()).getChildren().add(textField);
+
+        // Focus the new text field immediately
+        textField.requestFocus();
+    }
 
 }
