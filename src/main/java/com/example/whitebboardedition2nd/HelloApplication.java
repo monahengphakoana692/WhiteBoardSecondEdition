@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.geometry.Pos;
+import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -16,6 +17,7 @@ import javafx.scene.layout.*;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -24,6 +26,7 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
+import javax.tools.Tool;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -49,15 +52,18 @@ public class HelloApplication extends Application
     Label SaveCanvas = new Label("SaveCanvas");
     Label sound = new Label("Audio");
     Label clearStage = new Label("RemoveActivity");
-    Label newCanvas = new Label("EditCanvas");
+    Label editCanvas = new Label("EditCanvas");
+    Label newCanvas = new Label("NewCanvas");
     Stage stage = new Stage();
     private MediaPlayer mediaPlayer;
     private File lastDirectory = null;
-    StackPane activities;
+    Pane activities;
     ImageView musicImage;//image displayed when music play
     MediaView mediaView;
-    private double startX, startY;
+    private double startX, startY;//for creating a text field
     private Rectangle selectionRect;
+    private boolean isTextTool = false;
+    private Circle tempCircle;
 
 
 
@@ -121,6 +127,9 @@ public class HelloApplication extends Application
 
         Pane toolHolder = new Pane(penTool);
         Pane eraserHolder = new Pane(erasertool);
+        Label textTool = new Label("T");
+        textTool.setStyle("-fx-text-fill:white;" +
+                "-fx-font-size:30px;");
 
         toolHolder.setId("toolHolder");
         toolHolder.setPrefSize(20, 40);
@@ -132,6 +141,8 @@ public class HelloApplication extends Application
         toolHolder.setOnMouseClicked(event ->
         {
             penTracker.set(1);
+            eraserTracker.set(0);
+            isTextTool = false;
             toolHolder.setStyle("-fx-background-color:gray;");
             eraserHolder.setStyle("-fx-background-color:white;");
             graphicsContext.setStroke(colorPicker.getValue());
@@ -143,7 +154,10 @@ public class HelloApplication extends Application
         eraserHolder.setOnMouseClicked(event ->
         {
             //preparing eraser
+
+            penTracker.set(0);
             eraserTracker.set(1);
+            isTextTool = false;
             eraserHolder.setStyle("-fx-background-color:gray;");
             toolHolder.setStyle("-fx-background-color:white;");
             graphicsContext.setStroke(Color.WHITE);
@@ -153,7 +167,22 @@ public class HelloApplication extends Application
             pane.setCursor(eraserCursor);
         });
 
-        toolsSet.getChildren().addAll(toolHolder,eraserHolder);
+        textTool.setOnMouseClicked(event -> {
+
+            penTracker.set(0);
+            eraserTracker.set(0);
+            eraserHolder.setStyle("-fx-background-color:white;");
+            toolHolder.setStyle("-fx-background-color:white;");
+            //graphicsContext.setStroke(Color.WHITE);
+            isTextTool = true;
+            pane.setCursor(Cursor.DEFAULT);
+
+                CreateText();
+
+
+        });
+
+        toolsSet.getChildren().addAll(toolHolder,eraserHolder, textTool);
 
         return toolsSet;
     }
@@ -222,7 +251,7 @@ public class HelloApplication extends Application
 
        SaveCanvas.setId("ExLabels");
 
-
+       editCanvas.setId("ExLabels");
        sound.setId("ExLabels");
 
        clearStage.setId("ExLabels");
@@ -267,7 +296,7 @@ public class HelloApplication extends Application
 
        titleBar.getChildren().addAll(minimizeBtn, maximizeBtn, closeBtn);
        titleBar.setId("windowsBtns");
-       externalFunction.getChildren().addAll( ico,textFile,newCanvas, SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage,titleBar);
+       externalFunction.getChildren().addAll( ico,textFile,newCanvas, editCanvas,SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage,titleBar);
        externalFunction.setStyle("-fx-spacing:50px;");
 
 
@@ -285,23 +314,47 @@ public class HelloApplication extends Application
         return internalFunction;
     }
 
-    public StackPane currentActive()
+    private Canvas findExistingCanvas(Pane parent) {
+        for (javafx.scene.Node node : parent.getChildren()) {
+            if (node instanceof Canvas) {
+                return (Canvas) node;
+            }
+        }
+        return null;
+    }
+
+    private void setupDrawingEvents(Canvas canvas) {
+        canvas.setOnMousePressed(event -> {
+            graphicsContext.beginPath();
+            graphicsContext.moveTo(event.getX(), event.getY());
+            graphicsContext.stroke();
+        });
+
+        canvas.setOnMouseDragged(event -> {
+            graphicsContext.lineTo(event.getX(), event.getY());
+            graphicsContext.stroke();
+        });
+    }
+
+    public Pane currentActive()
     {
 
 
-        activities = new StackPane();
+        activities = new Pane();
         activities.setMaxWidth(1000);
         activities.setMaxHeight(530);
         activities.setId("currentActive");
 
 
-        penTracker.addListener((obs, oldVal, newVal) ->
-        {
-            //activities.getChildren().clear(); // Clear previous content
-            if (newVal.intValue() == 1)
-            {
-                activities.getChildren().add(drawingAction()); // Add drawing area dynamically
-
+        penTracker.addListener((obs, oldVal, newVal) -> {
+            if (newVal.intValue() == 1 && pane != null) {
+                Canvas canvas = findExistingCanvas(pane);
+                if (canvas == null) {
+                    canvas = new Canvas(pane.getWidth(), pane.getHeight());
+                    pane.getChildren().add(canvas);
+                }
+                graphicsContext = canvas.getGraphicsContext2D();
+                setupDrawingEvents(canvas);
             }
         });
 
@@ -317,7 +370,7 @@ public class HelloApplication extends Application
             pane.getChildren().add(doc);
             activities.getChildren().add(pane);
         });
-        newCanvas.setOnMouseClicked(event -> {
+        editCanvas.setOnMouseClicked(event -> {
 
            activities.getChildren().add(drawingImage());
         });
@@ -420,6 +473,10 @@ public class HelloApplication extends Application
             saveCanvasDrawing();
         });
 
+        newCanvas.setOnMouseClicked(event -> {
+            activities.getChildren().add(drawingAction());
+        });
+
         sound.setOnMouseClicked(event ->
         {
             pane = new StackPane();
@@ -512,7 +569,8 @@ public class HelloApplication extends Application
                 // Add to main activities pane
                 pane = new StackPane(imageCanvasPane);
                 activities.getChildren().add(pane);
-                activities.setAlignment(Pos.CENTER);
+                activities.setLayoutX(400);
+                activities.setLayoutY(70);
 
                 // Connect with existing drawing tools
                 colorPicker.setOnAction(e -> gc.setStroke(colorPicker.getValue()));
@@ -528,11 +586,16 @@ public class HelloApplication extends Application
         return pane;
     }
 
-    private void saveCanvasDrawing()
-    {
+    private void saveCanvasDrawing() {
         try {
-            // Create a snapshot of the pane (which contains the canvas)
-            WritableImage image = pane.snapshot(null, null);
+            // Create a temporary StackPane to hold all content we want to save
+            StackPane snapshotPane = new StackPane();
+
+            // Add all children from the original pane to our snapshot pane
+            snapshotPane.getChildren().addAll(pane.getChildren());
+
+            // Create a snapshot of the entire pane (which contains both canvas and text fields)
+            WritableImage image = snapshotPane.snapshot(null, null);
 
             // Show file chooser dialog
             FileChooser fileChooser = new FileChooser();
@@ -574,7 +637,7 @@ public class HelloApplication extends Application
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Drawing Saved");
                 alert.setHeaderText(null);
-                alert.setContentText("Your drawing has been saved successfully!");
+                alert.setContentText("Your drawing and text fields have been saved successfully!");
                 alert.showAndWait();
             }
         } catch (IOException e) {
@@ -625,6 +688,8 @@ public class HelloApplication extends Application
                 //createInitialUI();
             }
         }
+        musicImage.setFitWidth(400);
+        musicImage.setFitHeight(400);
     }
 
     private void openVideoMediaFile()
@@ -672,6 +737,8 @@ public class HelloApplication extends Application
 
         musicImage.setStyle("-fx-opacity:0px;");//disabling the music image when video places
         mediaView.setId("mediaView");
+        musicImage.setFitWidth(80);
+        musicImage.setFitHeight(80);
     }
 
     private void showErrorAlert(String title, String message) {
@@ -718,8 +785,8 @@ public class HelloApplication extends Application
 
         // Media View
         mediaView = new MediaView(mediaPlayer);
-        mediaView.setFitWidth(600);
-        mediaView.setFitHeight(500);
+        mediaView.setFitWidth(slider.getValue());
+        mediaView.setFitHeight(slider.getValue());
         mediaView.setPreserveRatio(true);
 
 
@@ -784,8 +851,7 @@ public class HelloApplication extends Application
         controlBox.setAlignment(Pos.CENTER);
         Image penImage = new Image(getClass().getResourceAsStream("/headsets.jpg"));
         musicImage = new ImageView(penImage);
-        musicImage.setFitWidth(80);
-        musicImage.setFitHeight(80);
+
 
         VBox mediaContainer = new VBox( mediaView, musicImage,timeBox, controlBox);
         mediaContainer.setAlignment(Pos.CENTER);
@@ -802,46 +868,63 @@ public class HelloApplication extends Application
 
     public void CreateText()
     {
-        selectionRect = new Rectangle();
-        selectionRect.setFill(Color.LIGHTBLUE.deriveColor(0, 1, 1, 0.5));
-        selectionRect.setStroke(Color.BLUE);
-        selectionRect.setVisible(false);
-        activities.getChildren().add(selectionRect);
-
-        activities.setOnMousePressed(e -> {
-            startX = e.getX();
-            startY = e.getY();
-
-            // Initialize selection rectangle
-            selectionRect.setX(startX);
-            selectionRect.setY(startY);
-            selectionRect.setWidth(0);
-            selectionRect.setHeight(0);
-            selectionRect.setVisible(true);
-        });
-
-        activities.setOnMouseDragged(e -> {
-            // Update selection rectangle dimensions during drag
-            double x = Math.min(startX, e.getX());
-            double y = Math.min(startY, e.getY());
-            double width = Math.abs(e.getX() - startX);
-            double height = Math.abs(e.getY() - startY);
-
-            selectionRect.setX(x);
-            selectionRect.setY(y);
-            selectionRect.setWidth(width);
-            selectionRect.setHeight(height);
-        });
-
-        activities.setOnMouseReleased(e -> {
+        // Only proceed if text tool is selected and other tools are not
+        if(isTextTool && penTracker.get() == 0 && eraserTracker.get() == 0)
+        {
+            selectionRect = new Rectangle();
+            selectionRect.setFill(Color.LIGHTBLUE.deriveColor(0, 1, 1, 0.5));
+            selectionRect.setStroke(Color.BLUE);
             selectionRect.setVisible(false);
+            activities.getChildren().add(selectionRect);
 
-            // Only create text field if drag was significant
-            if (selectionRect.getWidth() > 10 && selectionRect.getHeight() > 10) {
-                createTextField(selectionRect.getX(), selectionRect.getY(),
-                        selectionRect.getWidth(), selectionRect.getHeight());
+            activities.getChildren().getFirst().setOnMousePressed(e -> {
+                if(isTextTool) {
+                    startX = e.getX();
+                    startY = e.getY();
+
+                    // Initialize selection rectangle
+                    selectionRect.setX(startX);
+                    selectionRect.setY(startY);
+                    selectionRect.setWidth(0);
+                    selectionRect.setHeight(0);
+                    selectionRect.setVisible(true);
+                }
+            });
+
+            activities.getChildren().getFirst().setOnMouseDragged(e -> {
+                if(isTextTool && selectionRect.isVisible()) {
+                    // Update selection rectangle dimensions during drag
+                    double x = Math.min(startX, e.getX());
+                    double y = Math.min(startY, e.getY());
+                    double width = Math.abs(e.getX() - startX);
+                    double height = Math.abs(e.getY() - startY);
+
+                    selectionRect.setX(x);
+                    selectionRect.setY(y);
+                    selectionRect.setWidth(width);
+                    selectionRect.setHeight(height);
+                }
+            });
+
+            activities.getChildren().getFirst().setOnMouseReleased(e -> {
+                if(isTextTool && selectionRect != null && selectionRect.isVisible()) {
+                    selectionRect.setVisible(false);
+
+                    // Only create text field if drag was significant
+                    if (selectionRect.getWidth() > 10 && selectionRect.getHeight() > 10) {
+                        createTextField(selectionRect.getX(), selectionRect.getY(),
+                                selectionRect.getWidth(), selectionRect.getHeight());
+                    }
+                }
+            });
+        }
+        else {
+            // Clean up if switching away from text tool
+            if(selectionRect != null && activities.getChildren().contains(selectionRect)) {
+                activities.getChildren().remove(selectionRect);
             }
-        });
+
+        }
     }
 
     private void createTextField(double x, double y, double width, double height) {
