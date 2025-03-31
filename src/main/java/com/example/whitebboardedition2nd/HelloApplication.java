@@ -3,10 +3,9 @@ package com.example.whitebboardedition2nd;
 import javafx.application.Application;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.geometry.Bounds;
 import javafx.geometry.Pos;
-import javafx.scene.Cursor;
-import javafx.scene.ImageCursor;
-import javafx.scene.Scene;
+import javafx.scene.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -30,6 +29,7 @@ import javax.tools.Tool;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.List;
 import java.util.Scanner;
 
 public class HelloApplication extends Application
@@ -105,7 +105,6 @@ public class HelloApplication extends Application
             stage.setX(event.getScreenX() - xOffset);
             stage.setY(event.getScreenY() - yOffset);
         });
-        stage.setTitle("Multimedia");
         stage.show();
     }
 
@@ -414,7 +413,9 @@ public class HelloApplication extends Application
                     activities.getChildren().clear();
                     pane = new StackPane();
                     doc.setText("");
+                    makeDraggable(doc);
                     pane.getChildren().add(doc);
+                    makeDraggable(pane);
                     activities.getChildren().add(pane);
 
                     Scanner filereader = new Scanner(file);
@@ -430,18 +431,18 @@ public class HelloApplication extends Application
                 }
             }
         });
-        OpenMultiMediav.setOnMouseClicked(event ->
+        OpenMultiMediav.setOnMouseClicked(event ->//uploading the video
         {
 
             openVideoMediaFile();
         });
 
-        OpenMultiMedia.setOnMouseClicked(event ->
+        OpenMultiMedia.setOnMouseClicked(event ->//uploading the pictures
         {
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add1 All","*"));
             fileChooser.setTitle("Open files");
             File file = fileChooser.showOpenDialog(stage);
             if(file!=null)
@@ -451,7 +452,10 @@ public class HelloApplication extends Application
 
                     activities.getChildren().clear();
                     pane = new StackPane();
-                    pane.getChildren().add(new ImageView(new Image(String.valueOf(file))));
+                    ImageView imageView =new ImageView(new Image(String.valueOf(file)));
+                    pane.getChildren().add(imageView );
+
+                    makeDraggable(pane);
                     activities.getChildren().add(pane);
 
                     Scanner filereader = new Scanner(file);
@@ -775,20 +779,21 @@ public class HelloApplication extends Application
         }
     }
 
-    private void setupMediaPlayerUI()
-    {
-        VBox audio = new VBox();
-        audio.setPrefHeight(20);
-        audio.setPrefWidth(30);
+    private void setupMediaPlayerUI() {
+        // Create a container pane that will hold all draggable media components
+        Pane mediaContainer = new Pane();
+        mediaContainer.setStyle("-fx-background-color: rgba(46, 46, 46, 0); -fx-background-radius: 5;");
 
-
-
-        // Media View
+        // Media View - make draggable
         mediaView = new MediaView(mediaPlayer);
-        mediaView.setFitWidth(slider.getValue());
-        mediaView.setFitHeight(slider.getValue());
+        mediaView.setFitWidth(600);  // Set reasonable default size
+        mediaView.setFitHeight(400);
         mediaView.setPreserveRatio(true);
+        mediaView.setLayoutX(50);    // Initial position
+        mediaView.setLayoutY(50);
 
+        // Make mediaView draggable
+        makeDraggable(mediaView);
 
         // Volume Slider
         Slider volumeSlider = new Slider(0, 1, 0.5);
@@ -816,9 +821,7 @@ public class HelloApplication extends Application
 
         // Play/Pause Button
         Button playButton = new Button("▶");
-        playButton.setOnAction(e ->
-                togglePlayPause(playButton)
-        );
+        playButton.setOnAction(e -> togglePlayPause(playButton));
 
         // Stop Button
         Button stopButton = new Button("⏹");
@@ -842,28 +845,266 @@ public class HelloApplication extends Application
             totalTimeLabel.setText(formatTime(mediaPlayer.getMedia().getDuration()));
         });
 
-        // Control Layout
+        // Control Layout - make draggable
         HBox timeBox = new HBox(10, currentTimeLabel, progressSlider, totalTimeLabel);
         timeBox.setAlignment(Pos.CENTER);
-        Label vol =  new Label("Volume:");
+        timeBox.setLayoutX(100);
+        timeBox.setLayoutY(mediaView.getFitHeight() + 60);
+
+        Label vol = new Label("Volume:");
         vol.setStyle("-fx-text-fill:white;");
+
         HBox controlBox = new HBox(10, playButton, stopButton, vol, volumeSlider);
         controlBox.setAlignment(Pos.CENTER);
-        Image penImage = new Image(getClass().getResourceAsStream("/headsets.jpg"));
-        musicImage = new ImageView(penImage);
+        controlBox.setLayoutX(100);
+        controlBox.setLayoutY(mediaView.getFitHeight() + 90);
+
+        // Make controls draggable
+        makeDraggable(controlBox);
+        makeDraggable(timeBox);
+
+        // Music Image - make draggable
+        musicImage = new ImageView(new Image(getClass().getResourceAsStream("/headsets.jpg")));
+        musicImage.setFitWidth(80);
+        musicImage.setFitHeight(80);
+        musicImage.setLayoutX(mediaView.getFitWidth() + 70);
+        musicImage.setLayoutY(50);
+        makeDraggable(musicImage);
+
+        // Add all components to the container
+        mediaContainer.getChildren().addAll(mediaView, musicImage, timeBox, controlBox);
+
+        // Make the entire media container draggable
+        makeDraggable(mediaContainer);
 
 
-        VBox mediaContainer = new VBox( mediaView, musicImage,timeBox, controlBox);
-        mediaContainer.setAlignment(Pos.CENTER);
-        mediaContainer.setPrefWidth(100);
-        mediaContainer.setPrefHeight(30);
-
-        audio.getChildren().add(mediaContainer);
-        VBox tempHolder = new VBox(audio);
-        tempHolder.setAlignment(Pos.CENTER);
+        // Add to activities pane
         activities.getChildren().clear();
-        activities.getChildren().add(tempHolder);
+        activities.getChildren().add(mediaContainer);
         mediaPlayer.play();
+    }
+
+    // Helper method to make any node draggable
+    private void makeDraggable(Node node) {
+        final double[] dragDelta = new double[2];
+
+        node.setOnMousePressed(mouseEvent -> {
+            // Record the mouse press coordinates relative to the node
+            dragDelta[0] = mouseEvent.getX();
+            dragDelta[1] = mouseEvent.getY();
+            node.toFront(); // Bring to front when clicked
+        });
+
+        node.setOnMouseDragged(mouseEvent -> {
+            // Calculate new position
+            double newX = mouseEvent.getSceneX() - dragDelta[0];
+            double newY = mouseEvent.getSceneY() - dragDelta[1];
+
+            // For Pane containers, we need to adjust for their position
+            if (node instanceof Pane) {
+                node.setLayoutX(newX);
+                node.setLayoutY(newY);
+            }
+            // For other nodes (ImageView, HBox, etc.)
+            else {
+                if (node.getParent().getParent() instanceof Pane) {
+                    Pane parent = (Pane) node.getParent();
+                    // Ensure we don't drag outside parent bounds
+                    newX = Math.max(0, Math.min(newX, parent.getWidth() - node.getBoundsInParent().getWidth()));
+                    newY = Math.max(0, Math.min(newY, parent.getHeight() - node.getBoundsInParent().getHeight()));
+
+                    node.setLayoutX(newX);
+                    node.setLayoutY(newY);
+                }
+            }
+        });
+    }
+
+    private void makeResizable(Node node) {
+        // First make it draggable
+        makeDraggable(node);
+
+        // Create resize handles (8 handles for all directions)
+        final double handleSize = 8;
+
+        // Resize rectangles for all directions
+        Rectangle topLeft = createResizeHandle(handleSize);
+        Rectangle top = createResizeHandle(handleSize);
+        Rectangle topRight = createResizeHandle(handleSize);
+        Rectangle right = createResizeHandle(handleSize);
+        Rectangle bottomRight = createResizeHandle(handleSize);
+        Rectangle bottom = createResizeHandle(handleSize);
+        Rectangle bottomLeft = createResizeHandle(handleSize);
+        Rectangle left = createResizeHandle(handleSize);
+
+        // Add all handles to a group
+        Group resizeHandles = new Group(topLeft, top, topRight, right,
+                bottomRight, bottom, bottomLeft, left);
+
+        // Make handles visible only when node is selected
+        resizeHandles.setVisible(false);
+        node.setOnMouseClicked(e -> {
+            if (e.getClickCount() == 1) {
+                resizeHandles.setVisible(true);
+                resizeHandles.toFront();
+                node.toFront();
+            }
+        });
+
+        // Hide handles when clicking elsewhere
+        if (node.getParent() instanceof Pane) {
+            Pane parent = (Pane) node.getParent();
+            parent.setOnMouseClicked(e -> {
+                if (e.getTarget() == parent) {
+                    resizeHandles.setVisible(false);
+                }
+            });
+        }
+
+        // Position handles around the node
+        positionHandles(node, resizeHandles);
+
+        // Add handles to the node's parent
+        if (node.getParent() instanceof Pane) {
+            ((Pane) node.getParent()).getChildren().add(resizeHandles);
+        }
+
+        // Setup resize functionality for each handle
+        setupResize(topLeft, node, true, true, true, true);
+        setupResize(top, node, false, true, false, true);
+        setupResize(topRight, node, false, true, true, false);
+        setupResize(right, node, false, false, true, false);
+        setupResize(bottomRight, node, false, false, true, true);
+        setupResize(bottom, node, false, false, false, true);
+        setupResize(bottomLeft, node, true, false, true, false);
+        setupResize(left, node, true, false, false, false);
+
+        // Update handle positions when node is dragged
+        node.layoutXProperty().addListener((obs, oldVal, newVal) -> positionHandles(node, resizeHandles));
+        node.layoutYProperty().addListener((obs, oldVal, newVal) -> positionHandles(node, resizeHandles));
+        node.boundsInParentProperty().addListener((obs, oldVal, newVal) -> positionHandles(node, resizeHandles));
+    }
+
+    private Rectangle createResizeHandle(double size) {
+        Rectangle handle = new Rectangle(size, size);
+        handle.setFill(Color.BLUE);
+        handle.setStroke(Color.WHITE);
+        handle.setStrokeWidth(1);
+        return handle;
+    }
+
+    private void positionHandles(Node node, Group handles) {
+        Bounds bounds = node.getBoundsInParent();
+        double width = bounds.getWidth();
+        double height = bounds.getHeight();
+        double x = bounds.getMinX();
+        double y = bounds.getMinY();
+
+        // Get all handles from the group
+        List<Node> handleList = handles.getChildren();
+
+        // Top-left
+        ((Rectangle) handleList.get(0)).setX(x - 4);
+        ((Rectangle) handleList.get(0)).setY(y - 4);
+
+        // Top
+        ((Rectangle) handleList.get(1)).setX(x + width/2 - 4);
+        ((Rectangle) handleList.get(1)).setY(y - 4);
+
+        // Top-right
+        ((Rectangle) handleList.get(2)).setX(x + width - 4);
+        ((Rectangle) handleList.get(2)).setY(y - 4);
+
+        // Right
+        ((Rectangle) handleList.get(3)).setX(x + width - 4);
+        ((Rectangle) handleList.get(3)).setY(y + height/2 - 4);
+
+        // Bottom-right
+        ((Rectangle) handleList.get(4)).setX(x + width - 4);
+        ((Rectangle) handleList.get(4)).setY(y + height - 4);
+
+        // Bottom
+        ((Rectangle) handleList.get(5)).setX(x + width/2 - 4);
+        ((Rectangle) handleList.get(5)).setY(y + height - 4);
+
+        // Bottom-left
+        ((Rectangle) handleList.get(6)).setX(x - 4);
+        ((Rectangle) handleList.get(6)).setY(y + height - 4);
+
+        // Left
+        ((Rectangle) handleList.get(7)).setX(x - 4);
+        ((Rectangle) handleList.get(7)).setY(y + height/2 - 4);
+    }
+
+    private void setupResize(Rectangle handle, Node node,
+                             boolean moveX, boolean moveY,
+                             boolean resizeWidth, boolean resizeHeight) {
+
+        final double[] dragDelta = new double[2];
+        final double[] initialSize = new double[2];
+        final double[] initialPos = new double[2];
+
+        handle.setOnMousePressed(e -> {
+            dragDelta[0] = e.getSceneX();
+            dragDelta[1] = e.getSceneY();
+            initialSize[0] = node.getBoundsInParent().getWidth();
+            initialSize[1] = node.getBoundsInParent().getHeight();
+            initialPos[0] = node.getLayoutX();
+            initialPos[1] = node.getLayoutY();
+            e.consume();
+        });
+
+        handle.setOnMouseDragged(e -> {
+            double deltaX = e.getSceneX() - dragDelta[0];
+            double deltaY = e.getSceneY() - dragDelta[1];
+
+            // Calculate new width and height
+            double newWidth = initialSize[0];
+            double newHeight = initialSize[1];
+
+            if (resizeWidth) {
+                newWidth = Math.max(node.minWidth(-1), initialSize[0] + (moveX ? -deltaX : deltaX));
+            }
+            if (resizeHeight) {
+                newHeight = Math.max(node.minHeight(-1), initialSize[1] + (moveY ? -deltaY : deltaY));
+            }
+
+            // Set new size
+            if (node instanceof Region) {
+                ((Region) node).setPrefSize(newWidth, newHeight);
+            } else if (node instanceof ImageView) {
+                ((ImageView) node).setFitWidth(newWidth);
+                ((ImageView) node).setFitHeight(newHeight);
+            } else {
+                node.setScaleX(newWidth / node.getBoundsInLocal().getWidth());
+                node.setScaleY(newHeight / node.getBoundsInLocal().getHeight());
+            }
+
+            // Adjust position if needed
+            if (moveX) {
+                node.setLayoutX(initialPos[0] + (initialSize[0] - newWidth));
+            }
+            if (moveY) {
+                node.setLayoutY(initialPos[1] + (initialSize[1] - newHeight));
+            }
+
+            e.consume();
+        });
+
+        // Change cursor based on handle position
+        if (moveX && moveY) {
+            handle.setCursor(Cursor.NW_RESIZE);
+        } else if (moveX && !moveY && resizeHeight) {
+            handle.setCursor(Cursor.SW_RESIZE);
+        } else if (!moveX && moveY && resizeWidth) {
+            handle.setCursor(Cursor.NE_RESIZE);
+        } else if (resizeWidth && resizeHeight) {
+            handle.setCursor(Cursor.SE_RESIZE);
+        } else if (resizeWidth) {
+            handle.setCursor(Cursor.E_RESIZE);
+        } else if (resizeHeight) {
+            handle.setCursor(Cursor.S_RESIZE);
+        }
     }
 
     public void CreateText()
