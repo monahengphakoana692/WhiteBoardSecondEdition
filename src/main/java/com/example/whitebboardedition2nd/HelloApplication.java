@@ -25,7 +25,6 @@ import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import javax.imageio.ImageIO;
-import javax.tools.Tool;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -38,43 +37,34 @@ public class HelloApplication extends Application
     private IntegerProperty eraserTracker = new SimpleIntegerProperty(0);
     GraphicsContext graphicsContext = null;
     Slider slider = null;
-    StackPane pane;//for current display of files and activities
     ColorPicker colorPicker = null;
-    HBox externalFunction = new HBox();
+    InterfaceManager interfaceManager = new InterfaceManager();
     private double xOffset = 0;//for dragging the stage
     private double yOffset = 0;//for dragging the stage
-    private TextArea doc = new TextArea();//for typing text to be saved
-    Label textFile = new Label("NewFile");//for creating text file
-    Label SaveFile = new Label("SaveFile"); // for saving files on editing board
-    Label OpenFiles = new Label("OpenFiles");
-    Label OpenMultiMedia = new Label("Pictures");
-    Label OpenMultiMediav = new Label("Videos");
-    Label SaveCanvas = new Label("SaveCanvas");
-    Label sound = new Label("Audio");
-    Label clearStage = new Label("RemoveActivity");
-    Label editCanvas = new Label("EditCanvas");
-    Label newCanvas = new Label("NewCanvas");
-    Stage stage = new Stage();
+
+
     private MediaPlayer mediaPlayer;
     private File lastDirectory = null;
-    Pane activities;
+
     ImageView musicImage;//image displayed when music play
     MediaView mediaView;
     private double startX, startY;//for creating a text field
     private Rectangle selectionRect;
     private boolean isTextTool = false;
     private Circle tempCircle;
+    HBox outSideFunctions = interfaceManager.externalFunctions();
 
 
 
     @Override
     public void start(Stage stages) throws IOException
     {
-        stage.initStyle(StageStyle.UNDECORATED);
+        //interfaceManager.setStage(stage);
+        interfaceManager.getStage().initStyle(StageStyle.UNDECORATED);
         FlowPane root = new FlowPane();//setting flow for resizing scene
         VBox    mainLayout = new VBox();
 
-        mainLayout.getChildren().addAll(externalFunctions(),internalFunctions());
+        mainLayout.getChildren().addAll(outSideFunctions,internalFunctions());
 
 
 
@@ -84,7 +74,7 @@ public class HelloApplication extends Application
         root.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
 
 
-        setPage(stage,new Scene(root,1400,700));
+        setPage(interfaceManager.getStage(),new Scene(root,1400,700));
 
 
     }
@@ -97,11 +87,12 @@ public class HelloApplication extends Application
     {
         stage.setScene(scene);
 
-        externalFunction.setOnMousePressed(event -> {
+
+        outSideFunctions.setOnMousePressed(event -> {
             xOffset = event.getSceneX();
             yOffset = event.getSceneY();
         });
-        externalFunction.setOnMouseDragged(event -> {
+        outSideFunctions.setOnMouseDragged(event -> {
             stage.setX(event.getScreenX() - xOffset);
             stage.setY(event.getScreenY() - yOffset);
         });
@@ -147,7 +138,7 @@ public class HelloApplication extends Application
             graphicsContext.setStroke(colorPicker.getValue());
             graphicsContext.setLineWidth(slider.getValue());
             ImageCursor penCursor = new ImageCursor(penImage);
-            pane.setCursor(penCursor);
+            interfaceManager.getPane().setCursor(penCursor);
 
         });
         eraserHolder.setOnMouseClicked(event ->
@@ -163,7 +154,7 @@ public class HelloApplication extends Application
             graphicsContext.setLineWidth(8);
             Image eraserImage = new Image(getClass().getResourceAsStream("/eraser.png"));
             ImageCursor eraserCursor = new ImageCursor(eraserImage);
-            pane.setCursor(eraserCursor);
+            interfaceManager.getPane().setCursor(eraserCursor);
         });
 
         textTool.setOnMouseClicked(event -> {
@@ -174,7 +165,7 @@ public class HelloApplication extends Application
             toolHolder.setStyle("-fx-background-color:white;");
             //graphicsContext.setStroke(Color.WHITE);
             isTextTool = true;
-            pane.setCursor(Cursor.DEFAULT);
+            interfaceManager.getPane().setCursor(Cursor.DEFAULT);
 
                 CreateText();
 
@@ -231,77 +222,6 @@ public class HelloApplication extends Application
         return settings;
     }
 
-   public HBox externalFunctions()//this is for external source
-   {
-
-
-
-       textFile.setId("ExLabels");
-
-       SaveFile.setId("ExLabels");
-
-
-       OpenFiles.setId("ExLabels");
-
-
-       OpenMultiMedia.setId("ExLabels");
-
-       OpenMultiMediav.setId("ExLabels");
-
-       SaveCanvas.setId("ExLabels");
-
-       editCanvas.setId("ExLabels");
-       sound.setId("ExLabels");
-
-       clearStage.setId("ExLabels");
-
-       newCanvas.setId("ExLabels");
-
-       externalFunction.setId("externalFunctions");
-       externalFunction.setPrefHeight(40);
-       externalFunction.setPrefWidth(1550);
-
-       Image penImage = new Image(getClass().getResourceAsStream("/ps.png"));
-       ImageView ico = new ImageView(penImage);//icon of the app
-       ico.setFitHeight(30);
-       ico.setFitWidth(30);
-       HBox titleBar = new HBox();
-       titleBar.setStyle("-fx-background-color: #5b5b5b; -fx-padding: 5;");
-       titleBar.setAlignment(Pos.CENTER_RIGHT);
-
-
-       Button minimizeBtn = new Button("─");
-       minimizeBtn.setId("windowsBtns");
-       minimizeBtn.setOnAction(e ->
-               stage.setIconified(true));
-
-
-       Button maximizeBtn = new Button("□");
-       maximizeBtn.setId("windowsBtns");
-       maximizeBtn.setOnAction(e -> {
-           if (stage.isMaximized()) {
-               stage.setMaximized(false);
-               maximizeBtn.setText("□");
-           } else {
-               stage.setMaximized(true);
-               maximizeBtn.setText("❐");
-           }
-       });
-
-// Close button
-       Button closeBtn = new Button("✕");
-       closeBtn.setId("windowsBtns");
-       closeBtn.setOnAction(e -> stage.close());
-
-       titleBar.getChildren().addAll(minimizeBtn, maximizeBtn, closeBtn);
-       titleBar.setId("windowsBtns");
-       externalFunction.getChildren().addAll( ico,textFile,newCanvas, editCanvas,SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage,titleBar);
-       externalFunction.setStyle("-fx-spacing:50px;");
-
-
-       return externalFunction;
-   }
-
     public HBox internalFunctions()//this is for internal activities
     {
         HBox internalFunction = new HBox();
@@ -338,19 +258,19 @@ public class HelloApplication extends Application
     public Pane currentActive()
     {
 
-
-        activities = new Pane();
-        activities.setMaxWidth(1000);
-        activities.setMaxHeight(530);
-        activities.setId("currentActive");
+        interfaceManager.setActivities(new Pane());
+        Pane activityPane = interfaceManager.getActivities();
+        activityPane.setMaxWidth(1000);
+        activityPane.setMaxHeight(530);
+        activityPane.setId("currentActive");
 
 
         penTracker.addListener((obs, oldVal, newVal) -> {
-            if (newVal.intValue() == 1 && pane != null) {
-                Canvas canvas = findExistingCanvas(pane);
+            if (newVal.intValue() == 1 && interfaceManager.getActivities() != null) {
+                Canvas canvas = findExistingCanvas(activityPane);
                 if (canvas == null) {
-                    canvas = new Canvas(pane.getWidth(), pane.getHeight());
-                    pane.getChildren().add(canvas);
+                    canvas = new Canvas(interfaceManager.getActivities().getWidth(), interfaceManager.getActivities().getHeight());
+                    interfaceManager.getActivities().getChildren().add(canvas);
                 }
                 graphicsContext = canvas.getGraphicsContext2D();
                 setupDrawingEvents(canvas);
@@ -361,34 +281,38 @@ public class HelloApplication extends Application
         {
 
         });
-        textFile.setOnMouseClicked(event ->
+
+        interfaceManager.getTextFile().setOnMouseClicked(event ->
         {
-            activities.getChildren().clear();
-            pane = new StackPane();
-            doc.setText("type something");
-            pane.getChildren().add(doc);
-            activities.getChildren().add(pane);
-        });
-        editCanvas.setOnMouseClicked(event -> {
-
-           activities.getChildren().add(drawingImage());
+            activityPane.getChildren().clear();
+            interfaceManager.setPane(new StackPane());
+            StackPane paneForDoc = interfaceManager.getPane();
+            interfaceManager.getDoc().setText("type something");
+            interfaceManager.getDoc().setPrefSize(interfaceManager.getActivities().getWidth(),interfaceManager.getActivities().getHeight());
+            paneForDoc.getChildren().add(interfaceManager.getDoc());
+            activityPane.getChildren().add(paneForDoc);
         });
 
-        SaveFile.setOnMouseClicked(event ->
+        interfaceManager.getEditCanvas().setOnMouseClicked(event -> {
+
+            activityPane.getChildren().add(drawingImage());
+        });
+
+        interfaceManager.getSaveFile().setOnMouseClicked(event ->
         {
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
             fileChooser.setTitle("save files");
-            File file = fileChooser.showSaveDialog(stage);
+            File file = fileChooser.showSaveDialog(interfaceManager.getStage());
             if(file!=null)
             {
                 try
                 {
 
                     PrintStream print = new PrintStream(file);
-                    print.println(doc.getText());
+                    print.println(interfaceManager.getDoc().getText());
                     print.flush();
                 } catch (Exception e)
                 {
@@ -398,30 +322,31 @@ public class HelloApplication extends Application
             }
         });
 
-        OpenFiles.setOnMouseClicked(event ->
+        interfaceManager.getOpenFiles().setOnMouseClicked(event ->
         {
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
             fileChooser.setTitle("Open files");
-            File file = fileChooser.showOpenDialog(stage);
+            File file = fileChooser.showOpenDialog(interfaceManager.getStage());
             if(file!=null)
             {
                 try
                 {
-                    activities.getChildren().clear();
-                    pane = new StackPane();
-                    doc.setText("");
-                    makeDraggable(doc);
-                    pane.getChildren().add(doc);
-                    makeDraggable(pane);
-                    activities.getChildren().add(pane);
+                    activityPane.getChildren().clear();
+
+                    interfaceManager.setPane(new StackPane());
+                    StackPane paneForNow = interfaceManager.getPane();
+                    interfaceManager.getDoc().setText("");
+                    interfaceManager.getDoc().setPrefSize(activityPane.getWidth(),activityPane.getHeight());
+                    paneForNow.getChildren().add(interfaceManager.getDoc());
+                    activityPane.getChildren().add(paneForNow);
 
                     Scanner filereader = new Scanner(file);
                     while(filereader.hasNextLine())
                     {
-                        doc.appendText(filereader.next() + " ");
+                        interfaceManager.getDoc().appendText(filereader.next() + " ");
                     }
 
                 } catch (Exception e)
@@ -431,37 +356,39 @@ public class HelloApplication extends Application
                 }
             }
         });
-        OpenMultiMediav.setOnMouseClicked(event ->//uploading the video
+
+        interfaceManager.getOpenMultiMediav().setOnMouseClicked(event ->//uploading the video
         {
 
             openVideoMediaFile();
         });
 
-        OpenMultiMedia.setOnMouseClicked(event ->//uploading the pictures
+        interfaceManager.getOpenMultiMedia().setOnMouseClicked(event ->//uploading the pictures
         {
 
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
             fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add1 All","*"));
             fileChooser.setTitle("Open files");
-            File file = fileChooser.showOpenDialog(stage);
+            File file = fileChooser.showOpenDialog(interfaceManager.getStage());
             if(file!=null)
             {
                 try
                 {
 
-                    activities.getChildren().clear();
-                    pane = new StackPane();
+                    activityPane.getChildren().clear();
+                    interfaceManager.setPane(new StackPane());
+                    StackPane paneForNow = interfaceManager.getPane();
                     ImageView imageView =new ImageView(new Image(String.valueOf(file)));
-                    pane.getChildren().add(imageView );
+                    paneForNow.getChildren().add(imageView );
 
-                    makeDraggable(pane);
-                    activities.getChildren().add(pane);
+                    makeDraggable(paneForNow);
+                    activityPane.getChildren().add(paneForNow);
 
                     Scanner filereader = new Scanner(file);
                     while(filereader.hasNextLine())
                     {
-                        doc.appendText(filereader.next() + " ");
+                        interfaceManager.getDoc().appendText(filereader.next() + " ");
                     }
 
                 } catch (Exception e)
@@ -473,26 +400,28 @@ public class HelloApplication extends Application
         });
 
         //saveCanvasDrawing()
-        SaveCanvas.setOnMouseClicked(event -> {
+
+        interfaceManager.getSaveCanvas().setOnMouseClicked(event -> {
             saveCanvasDrawing();
         });
 
-        newCanvas.setOnMouseClicked(event -> {
-            activities.getChildren().add(drawingAction());
+        interfaceManager.getNewCanvas().setOnMouseClicked(event -> {
+            activityPane.getChildren().add(drawingAction());
         });
 
-        sound.setOnMouseClicked(event ->
+        interfaceManager.getSound().setOnMouseClicked(event ->
         {
-            pane = new StackPane();
+            interfaceManager.setPane(new StackPane());
             openMediaFile();
         });
-        clearStage.setOnMouseClicked(event -> {
-            activities.getChildren().clear();
+
+        interfaceManager.getClearStage().setOnMouseClicked(event -> {
+            activityPane.getChildren().clear();
             mediaPlayer.stop();
             mediaPlayer = null;
         });
 
-        return activities;
+        return activityPane;
     }
 
     public StackPane drawingAction()
@@ -503,29 +432,30 @@ public class HelloApplication extends Application
         graphicsContext.setStroke(Color.BLACK);
         graphicsContext.setLineWidth(2);
 
-        pane = new StackPane();
-        pane.setId("DrawingSpace");
+        interfaceManager.setPane(new StackPane());
+        StackPane paneForNow = interfaceManager.getPane();
+        paneForNow.setId("DrawingSpace");
 
-        pane.setOnMousePressed(event -> {
+        paneForNow.setOnMousePressed(event -> {
             graphicsContext.beginPath();
             graphicsContext.moveTo(event.getX(), event.getY()); // Use local coordinates
             graphicsContext.stroke();
 
         });
 
-        pane.setOnMouseDragged(event -> {
+        paneForNow.setOnMouseDragged(event -> {
             graphicsContext.lineTo(event.getX(), event.getY()); // Use local coordinates
             graphicsContext.stroke();
 
         });
 
 
-        pane.getChildren().add(canvas);
+        paneForNow.getChildren().add(canvas);
 
-        return pane;
+        return paneForNow;
     }
 
-    public StackPane drawingImage()
+    public StackPane drawingImage()//for drawable image
     {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
@@ -534,11 +464,11 @@ public class HelloApplication extends Application
                 new FileChooser.ExtensionFilter("All Files", "*.*")
         );
         fileChooser.setTitle("Open Image File");
-        File file = fileChooser.showOpenDialog(stage);
+        File file = fileChooser.showOpenDialog(interfaceManager.getStage());
 
         if (file != null) {
             try {
-                activities.getChildren().clear();
+                interfaceManager.getActivities().getChildren().clear();
 
                 // Load the image
                 Image image = new Image(file.toURI().toString());
@@ -546,11 +476,11 @@ public class HelloApplication extends Application
 
                 // Create canvas with same dimensions as image
                 Canvas drawingCanvas = new Canvas(image.getWidth(), image.getHeight());
-                GraphicsContext gc = drawingCanvas.getGraphicsContext2D();
+                graphicsContext = drawingCanvas.getGraphicsContext2D();
 
                 // Set up drawing tools
-                gc.setStroke(Color.BLACK);
-                gc.setLineWidth(2);
+                graphicsContext.setStroke(Color.BLACK);
+                graphicsContext.setLineWidth(2);
 
                 // Create a stack pane to layer image and canvas
                 StackPane imageCanvasPane = new StackPane();
@@ -558,28 +488,30 @@ public class HelloApplication extends Application
 
                 // Set up mouse events for drawing
                 drawingCanvas.setOnMousePressed(e -> {
-                    gc.beginPath();
-                    gc.moveTo(e.getX(), e.getY());
-                    gc.stroke();
+                    graphicsContext.beginPath();
+                    graphicsContext.moveTo(e.getX(), e.getY());
+                    graphicsContext.stroke();
                 });
 
                 drawingCanvas.setOnMouseDragged(e -> {
-                    gc.lineTo(e.getX(), e.getY());
-                    gc.stroke();
+                    graphicsContext.lineTo(e.getX(), e.getY());
+                    graphicsContext.stroke();
 
                 });
 
 
                 // Add to main activities pane
-                pane = new StackPane(imageCanvasPane);
-                activities.getChildren().add(pane);
-                activities.setLayoutX(400);
-                activities.setLayoutY(70);
+
+                interfaceManager.setPane( new StackPane(imageCanvasPane));
+                StackPane paneForNow = interfaceManager.getPane();
+                interfaceManager.getActivities().getChildren().add(paneForNow);
+                interfaceManager.getActivities().setLayoutX(400);
+                interfaceManager.getActivities().setLayoutY(70);
 
                 // Connect with existing drawing tools
-                colorPicker.setOnAction(e -> gc.setStroke(colorPicker.getValue()));
+                colorPicker.setOnAction(e -> graphicsContext.setStroke(colorPicker.getValue()));
                 slider.valueProperty().addListener((obs, oldVal, newVal) ->
-                        gc.setLineWidth(newVal.doubleValue()));
+                        graphicsContext.setLineWidth(newVal.doubleValue()));
 
             } catch (Exception e) {
                 new Alert(Alert.AlertType.ERROR, "Error loading image: " + e.getMessage()).show();
@@ -587,7 +519,7 @@ public class HelloApplication extends Application
         }
 
 
-        return pane;
+        return interfaceManager.getPane();
     }
 
     private void saveCanvasDrawing() {
@@ -596,7 +528,7 @@ public class HelloApplication extends Application
             StackPane snapshotPane = new StackPane();
 
             // Add all children from the original pane to our snapshot pane
-            snapshotPane.getChildren().addAll(pane.getChildren());
+            snapshotPane.getChildren().addAll(interfaceManager.getPane().getChildren());
 
             // Create a snapshot of the entire pane (which contains both canvas and text fields)
             WritableImage image = snapshotPane.snapshot(null, null);
@@ -610,7 +542,7 @@ public class HelloApplication extends Application
                     new FileChooser.ExtensionFilter("PNG", "*.png"),
                     new FileChooser.ExtensionFilter("JPEG", "*.jpg", "*.jpeg")
             );
-            File file = fileChooser.showSaveDialog(stage);
+            File file = fileChooser.showSaveDialog(interfaceManager.getStage());
 
             if (file != null) {
                 // Get file extension
@@ -669,7 +601,7 @@ public class HelloApplication extends Application
         );
         fileChooser.setTitle("Open sound File");
 
-        File file = fileChooser.showOpenDialog(stage);
+        File file = fileChooser.showOpenDialog(interfaceManager.getStage());
 
         if (file != null) {
             try {
@@ -713,7 +645,7 @@ public class HelloApplication extends Application
         );
         fileChooser.setTitle("Open sound File");
 
-        File file = fileChooser.showOpenDialog(stage);
+        File file = fileChooser.showOpenDialog(interfaceManager.getStage());
 
         if (file != null) {
             try {
@@ -879,8 +811,8 @@ public class HelloApplication extends Application
 
 
         // Add to activities pane
-        activities.getChildren().clear();
-        activities.getChildren().add(mediaContainer);
+        interfaceManager.getActivities().getChildren().clear();
+        interfaceManager.getActivities().getChildren().add(mediaContainer);
         mediaPlayer.play();
     }
 
@@ -1116,9 +1048,9 @@ public class HelloApplication extends Application
             selectionRect.setFill(Color.LIGHTBLUE.deriveColor(0, 1, 1, 0.5));
             selectionRect.setStroke(Color.BLUE);
             selectionRect.setVisible(false);
-            activities.getChildren().add(selectionRect);
+            interfaceManager.getActivities().getChildren().add(selectionRect);
 
-            activities.getChildren().getFirst().setOnMousePressed(e -> {
+            interfaceManager.getActivities().getChildren().getFirst().setOnMousePressed(e -> {
                 if(isTextTool) {
                     startX = e.getX();
                     startY = e.getY();
@@ -1132,7 +1064,7 @@ public class HelloApplication extends Application
                 }
             });
 
-            activities.getChildren().getFirst().setOnMouseDragged(e -> {
+            interfaceManager.getActivities().getChildren().getFirst().setOnMouseDragged(e -> {
                 if(isTextTool && selectionRect.isVisible()) {
                     // Update selection rectangle dimensions during drag
                     double x = Math.min(startX, e.getX());
@@ -1147,7 +1079,7 @@ public class HelloApplication extends Application
                 }
             });
 
-            activities.getChildren().getFirst().setOnMouseReleased(e -> {
+            interfaceManager.getActivities().getChildren().getFirst().setOnMouseReleased(e -> {
                 if(isTextTool && selectionRect != null && selectionRect.isVisible()) {
                     selectionRect.setVisible(false);
 
@@ -1161,8 +1093,8 @@ public class HelloApplication extends Application
         }
         else {
             // Clean up if switching away from text tool
-            if(selectionRect != null && activities.getChildren().contains(selectionRect)) {
-                activities.getChildren().remove(selectionRect);
+            if(selectionRect != null && interfaceManager.getActivities().getChildren().contains(selectionRect)) {
+                interfaceManager.getActivities().getChildren().remove(selectionRect);
             }
 
         }
