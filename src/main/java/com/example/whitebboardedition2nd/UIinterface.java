@@ -1,5 +1,7 @@
 package com.example.whitebboardedition2nd;
 
+import javafx.scene.layout.StackPane;
+
 public interface UIinterface {
     void createNewTextFile();
 
@@ -17,11 +19,11 @@ public interface UIinterface {
 
     void saveCanvas();
 
-    void loadAudio()         // Corrected method name
-    ;
+    void loadAudio();       // Corrected method name
 
-    void removeActivities();
 
-    void drawingAction();
+    void removeActivities(MediaHandler medium);
+
+    StackPane drawingAction();
 
 }
