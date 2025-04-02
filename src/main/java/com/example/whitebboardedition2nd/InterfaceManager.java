@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.util.Scanner;
 
 public class InterfaceManager implements UIinterface,Tools
@@ -47,7 +48,16 @@ public class InterfaceManager implements UIinterface,Tools
     private IntegerProperty penTracker = new SimpleIntegerProperty(0);
     private IntegerProperty eraserTracker = new SimpleIntegerProperty(0);
     private boolean isTextTool = false;
+    private boolean isPicture = true;
 
+    public boolean isPicture()
+    {
+        return isPicture;
+    }
+
+    public void setPicture(boolean picture) {
+        isPicture = picture;
+    }
 
     public Pane getActivities() {
         return activities;
@@ -179,15 +189,14 @@ public class InterfaceManager implements UIinterface,Tools
         activities.setMaxWidth(1000);
         activities.setMaxHeight(530);
         activities.setId("currentActive");
-       /* getTextFile().setOnMouseClicked(event ->
-        {*/
+
             activities.getChildren().clear();
             pane = new StackPane();
             doc.setText("type something");
             doc.setPrefSize(activities.getWidth(),activities.getHeight());
             pane.getChildren().add(doc);
             activities.getChildren().add(pane);
-       // });
+            isPicture = true;
 
     } // Corrected method name
 
@@ -201,7 +210,28 @@ public class InterfaceManager implements UIinterface,Tools
 
     }
     @Override
-    public void saveTextFile(){
+    public void saveTextFile()
+    {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
+        fileChooser.setTitle("save files");
+        File file = fileChooser.showSaveDialog(getStage());
+        if(file!=null)
+        {
+            try
+            {
+
+                PrintStream print = new PrintStream(file);
+                print.println(getDoc().getText());
+                print.flush();
+            } catch (Exception e)
+            {
+
+                throw new RuntimeException(e);
+            }
+        }
+        setPicture(false);
 
     }
     @Override
@@ -236,11 +266,13 @@ public class InterfaceManager implements UIinterface,Tools
 
             throw new RuntimeException(e);
         }
+
     }
 
     @Override
-    public void loadPictures()
+    public void loadPictures(MediaHandler medium)
     {
+        medium.fetchPictures();
 
     }
     @Override
@@ -310,10 +342,12 @@ public class InterfaceManager implements UIinterface,Tools
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
+
     }
 
     @Override
-    public void loadAudio(){
+    public void loadAudio()
+    {
 
     }         // Corrected method name
     @Override
@@ -322,9 +356,12 @@ public class InterfaceManager implements UIinterface,Tools
         try
         {
 
-            medium.getMediaPlayer().stop();
-            medium.getMediaPlayer().dispose();
-            medium.setMediaPlayer(null);
+           if(isPicture!= false)
+           {
+               medium.getMediaPlayer().stop();
+               medium.getMediaPlayer().dispose();
+               medium.setMediaPlayer(null);
+           }
             getActivities().getChildren().removeFirst();
         } catch (Exception e)
         {

@@ -229,6 +229,7 @@ public class HelloApplication extends Application
                 interfaceManager.setGraphicsContext(canvas.getGraphicsContext2D());
                 setupDrawingEvents(canvas);
             }
+            interfaceManager.setPicture(false);
         });
 
        interfaceManager.eraserTrackerProperty().addListener((obs, oldVal, newVal) ->
@@ -245,40 +246,27 @@ public class HelloApplication extends Application
             interfaceManager.getDoc().setPrefSize(interfaceManager.getActivities().getWidth(),interfaceManager.getActivities().getHeight());
             paneForDoc.getChildren().add(interfaceManager.getDoc());
             activityPane.getChildren().add(paneForDoc);
+            interfaceManager.setPicture(false);
         });
 
         interfaceManager.getEditCanvas().setOnMouseClicked(event -> {
 
             activityPane.getChildren().add(drawingImage());
+            interfaceManager.setPicture(false);
+
         });
 
         interfaceManager.getSaveFile().setOnMouseClicked(event ->
         {
 
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialDirectory(new File("src/main/resources/textFiles"));
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add All","*"));
-            fileChooser.setTitle("save files");
-            File file = fileChooser.showSaveDialog(interfaceManager.getStage());
-            if(file!=null)
-            {
-                try
-                {
-
-                    PrintStream print = new PrintStream(file);
-                    print.println(interfaceManager.getDoc().getText());
-                    print.flush();
-                } catch (Exception e)
-                {
-
-                    throw new RuntimeException(e);
-                }
-            }
+            interfaceManager.saveTextFile();
+            interfaceManager.setPicture(false);
         });
 
         interfaceManager.getOpenFiles().setOnMouseClicked(event ->
         {
                 interfaceManager.openTextFile();
+
         });
 
         interfaceManager.getOpenMultiMediav().setOnMouseClicked(event ->//uploading the video
@@ -290,37 +278,9 @@ public class HelloApplication extends Application
         interfaceManager.getOpenMultiMedia().setOnMouseClicked(event ->//uploading the pictures
         {
 
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add1 All","*"));
-            fileChooser.setTitle("Open files");
-            File file = fileChooser.showOpenDialog(interfaceManager.getStage());
-            if(file!=null)
-            {
-                try
-                {
+            interfaceManager.loadPictures(medium);
+            interfaceManager.setPicture(false);
 
-                    activityPane.getChildren().clear();
-                    interfaceManager.setPane(new StackPane());
-                    StackPane paneForNow = interfaceManager.getPane();
-                    ImageView imageView =new ImageView(new Image(String.valueOf(file)));
-                    paneForNow.getChildren().add(imageView );
-
-                    makeDraggable(paneForNow);
-                    activityPane.getChildren().add(paneForNow);
-
-                    Scanner filereader = new Scanner(file);
-                    while(filereader.hasNextLine())
-                    {
-                        interfaceManager.getDoc().appendText(filereader.next() + " ");
-                    }
-
-                } catch (Exception e)
-                {
-
-                    throw new RuntimeException(e);
-                }
-            }
         });
 
         //saveCanvasDrawing()
@@ -328,16 +288,19 @@ public class HelloApplication extends Application
         interfaceManager.getSaveCanvas().setOnMouseClicked(event ->
         {
             interfaceManager.saveCanvas();
+            interfaceManager.setPicture(false);
         });
 
         interfaceManager.getNewCanvas().setOnMouseClicked(event -> {
             activityPane.getChildren().add(interfaceManager.drawingAction());
+            interfaceManager.setPicture(false);
         });
 
         interfaceManager.getSound().setOnMouseClicked(event ->
         {
             interfaceManager.setPane(new StackPane());
             medium.openMediaFile();
+
         });
 
         interfaceManager.getClearStage().setOnMouseClicked(event -> {
@@ -410,7 +373,7 @@ public class HelloApplication extends Application
                 new Alert(Alert.AlertType.ERROR, "Error loading image: " + e.getMessage()).show();
             }
         }
-
+        interfaceManager.setPicture(false);
 
         return interfaceManager.getPane();
     }

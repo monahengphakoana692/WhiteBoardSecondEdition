@@ -13,7 +13,7 @@ public interface UIinterface {
 
     void openTextFile();
 
-    void loadPictures();
+    void loadPictures(MediaHandler medium);
 
     void loadVideos();
 

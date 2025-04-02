@@ -8,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -15,6 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.util.Scanner;
 
 public class MediaHandler
 {
@@ -300,6 +302,44 @@ public class MediaHandler
         musicImage.setFitHeight(500);
     }
 
+    public void fetchPictures()
+    {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add1 All","*"));
+        fileChooser.setTitle("Open files");
+        File file = fileChooser.showOpenDialog(interfaceManager.getStage());
+        if(file!=null)
+        {
+            try
+            {
 
+                interfaceManager.getActivities().getChildren().clear();
+                interfaceManager.setPane(new StackPane());
+                StackPane paneForNow = interfaceManager.getPane();
+                ImageView imageView =new ImageView(new Image(String.valueOf(file)));
+                paneForNow.getChildren().add(imageView );
+
+                HelloApplication.makeDraggable(paneForNow);
+                interfaceManager.getActivities().getChildren().add(paneForNow);
+
+                Scanner filereader = new Scanner(file);
+                while(filereader.hasNextLine())
+                {
+                    interfaceManager.getDoc().appendText(filereader.next() + " ");
+                }
+
+            } catch (Exception e)
+            {
+
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    public void fetchMusic()
+    {
+
+    }
 
 }
