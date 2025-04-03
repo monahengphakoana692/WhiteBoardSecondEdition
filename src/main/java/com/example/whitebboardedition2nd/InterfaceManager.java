@@ -8,7 +8,6 @@ import javafx.scene.ImageCursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -50,6 +49,7 @@ public class InterfaceManager implements UIinterface,Tools
     private IntegerProperty eraserTracker = new SimpleIntegerProperty(0);
     private boolean isTextTool = false;
     private boolean isPicture = true;
+    private boolean isTextTime = false;
 
     public boolean isPicture()
     {
@@ -261,6 +261,7 @@ public class InterfaceManager implements UIinterface,Tools
             {
                 getDoc().appendText(filereader.next() + " ");
             }
+            isTextTime = true;
 
         } catch (Exception e)
         {
@@ -274,6 +275,7 @@ public class InterfaceManager implements UIinterface,Tools
     public void loadPictures(MediaHandler medium)
     {
         medium.fetchPictures();
+        isTextTime = true;
 
     }
     @Override
@@ -321,7 +323,7 @@ public class InterfaceManager implements UIinterface,Tools
 
                 // Convert to BufferedImage
                 java.awt.image.BufferedImage bufferedImage = new java.awt.image.BufferedImage(
-                        width, height,
+                           width, height,
                         java.awt.image.BufferedImage.TYPE_INT_ARGB
                 );
                 bufferedImage.setRGB(0, 0, width, height, pixels, 0, width);
@@ -403,6 +405,7 @@ public class InterfaceManager implements UIinterface,Tools
 
 
             paneForNow.getChildren().add(canvas);
+        isTextTime = true;
 
             return paneForNow;
     }
@@ -582,7 +585,6 @@ public class InterfaceManager implements UIinterface,Tools
         eraserHolder.setOnMouseClicked(event ->
         {
             //preparing eraser
-
             penTracker.set(0);
             eraserTracker.set(1);
             isTextTool = false;
@@ -595,14 +597,16 @@ public class InterfaceManager implements UIinterface,Tools
             getPane().setCursor(eraserCursor);
         });
 
-        textTool.setOnMouseClicked(event -> {
-            double[] delta = new double[2];
+        textTool.setOnMouseClicked(event ->
+        {
+            isTextTool = true;
+
             // Set up tool states
             setPenTracker(0);
             setEraserTracker(0);
             eraserHolder.setStyle("-fx-background-color:gray;");
             toolHolder.setStyle("-fx-background-color:gray;");
-            isTextTool = true;
+
             getPane().setCursor(Cursor.DEFAULT);
 
             // Create and configure the label
@@ -650,8 +654,11 @@ public class InterfaceManager implements UIinterface,Tools
                 }
             });
 
-            // Add the label to the pane
-            getActivities().getChildren().add(label);
+            if(isTextTime == true)
+            {
+                // Add the label to the pane
+                getActivities().getChildren().add(label);
+            }
         });
 
         toolsSet.getChildren().addAll(toolHolder,eraserHolder, textTool);
