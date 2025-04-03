@@ -8,6 +8,7 @@ import javafx.scene.ImageCursor;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.effect.BlendMode;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
@@ -371,6 +372,7 @@ public class InterfaceManager implements UIinterface,Tools
     @Override
     public StackPane drawingAction()
     {
+            setPenTracker(0);//to make sure the pen tool is not on, without the user s intentions
             Canvas canvas = new Canvas(1000, 530); // Set canvas size
             graphicsContext = canvas.getGraphicsContext2D();
 
@@ -384,13 +386,18 @@ public class InterfaceManager implements UIinterface,Tools
             paneForNow.setOnMousePressed(event -> {
                 graphicsContext.beginPath();
                 graphicsContext.moveTo(event.getX(), event.getY()); // Use local coordinates
-                graphicsContext.stroke();
+                if(getPenTracker() == 1 || getEraserTracker()==1 ) {
+                    graphicsContext.stroke();
+                }
 
             });
 
             paneForNow.setOnMouseDragged(event -> {
                 graphicsContext.lineTo(event.getX(), event.getY()); // Use local coordinates
-                graphicsContext.stroke();
+                if(getPenTracker() == 1 || getEraserTracker()==1 )
+                {
+                    graphicsContext.stroke();
+                }
 
             });
 
@@ -564,8 +571,8 @@ public class InterfaceManager implements UIinterface,Tools
             penTracker.set(1);
             eraserTracker.set(0);
             isTextTool = false;
-            toolHolder.setStyle("-fx-background-color:gray;");
-            eraserHolder.setStyle("-fx-background-color:white;");
+            toolHolder.setStyle("-fx-background-color:white;");
+            eraserHolder.setStyle("-fx-background-color:gray;");
             graphicsContext.setStroke(colorPicker.getValue());
             graphicsContext.setLineWidth(slider.getValue());
             ImageCursor penCursor = new ImageCursor(penImage);
@@ -579,8 +586,8 @@ public class InterfaceManager implements UIinterface,Tools
             penTracker.set(0);
             eraserTracker.set(1);
             isTextTool = false;
-            eraserHolder.setStyle("-fx-background-color:gray;");
-            toolHolder.setStyle("-fx-background-color:white;");
+            eraserHolder.setStyle("-fx-background-color:white;");
+            toolHolder.setStyle("-fx-background-color:gray;");
             graphicsContext.setStroke(Color.WHITE);
             graphicsContext.setLineWidth(8);
             Image eraserImage = new Image(getClass().getResourceAsStream("/eraser.png"));
@@ -589,18 +596,62 @@ public class InterfaceManager implements UIinterface,Tools
         });
 
         textTool.setOnMouseClicked(event -> {
-
-            penTracker.set(0);
-            eraserTracker.set(0);
-            eraserHolder.setStyle("-fx-background-color:white;");
-            toolHolder.setStyle("-fx-background-color:white;");
+            double[] delta = new double[2];
+            // Set up tool states
+            setPenTracker(0);
+            setEraserTracker(0);
+            eraserHolder.setStyle("-fx-background-color:gray;");
+            toolHolder.setStyle("-fx-background-color:gray;");
             isTextTool = true;
             getPane().setCursor(Cursor.DEFAULT);
 
-            //CreateText();
-            new HelloApplication().CreateText();
+            // Create and configure the label
+            Label label = new Label("Click to edit");
+            label.setStyle("-fx-font-size: 16px; -fx-border-color: lightgray; -fx-border-width: 1px; -fx-padding: 5px;");
 
+            // Make it draggable
+            HelloApplication.makeDraggable(label);
 
+            // Make it editable on click
+            label.setOnMouseClicked(mouseEvent -> {
+                if (mouseEvent.getClickCount() == 1)
+                {
+                    // Create and configure the editing TextField
+                    TextField textField = new TextField(label.getText());
+                    textField.setLayoutX(label.getLayoutX());
+                    textField.setLayoutY(label.getLayoutY());
+                    textField.setPrefWidth(label.getWidth() + 20); // adding Extra width for editing
+
+                    // Style to match label appearance
+                    textField.setStyle("-fx-font-size: 16px; -fx-border-color: #6699FF; -fx-border-width: 1px; -fx-padding: 5px;");
+
+                    // Replace label with text field
+                    getActivities().getChildren().remove(label);
+                    getActivities().getChildren().add(textField);
+
+                    // Select all text and focus
+                    textField.selectAll();
+                    textField.requestFocus();//this makes it to focus immediately
+
+                    // Handle editing completion
+                    textField.setOnAction(e -> {
+                        label.setText(textField.getText());
+                        getActivities().getChildren().remove(textField);
+                        getActivities().getChildren().add(label);
+                    });
+
+                    textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
+                        if (!newVal) {
+                            label.setText(textField.getText());
+                            getActivities().getChildren().remove(textField);
+                            getActivities().getChildren().add(label);
+                        }
+                    });
+                }
+            });
+
+            // Add the label to the pane
+            getActivities().getChildren().add(label);
         });
 
         toolsSet.getChildren().addAll(toolHolder,eraserHolder, textTool);

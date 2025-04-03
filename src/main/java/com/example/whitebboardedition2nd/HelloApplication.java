@@ -8,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
@@ -80,83 +81,6 @@ public class HelloApplication extends Application
         stage.show();
     }
 
-    public VBox toolsPanel()//holds tools to be used for drawing
-    {
-        VBox toolsSet = new VBox();
-        toolsSet.setId("toolPanel");
-        toolsSet.setPrefHeight(600);
-        toolsSet.setPrefWidth(70);
-
-        Image penImage = new Image(getClass().getResourceAsStream("/pen.png"));
-        Image erazeImage = new Image(getClass().getResourceAsStream("/eraser.png"));
-        ImageView penTool = new ImageView(penImage);
-        ImageView erasertool = new ImageView(erazeImage);
-        penTool.setFitWidth(40);
-        penTool.setFitHeight(40);
-        erasertool.setFitWidth(40);
-        erasertool.setFitHeight(40);
-
-        Pane toolHolder = new Pane(penTool);
-        Pane eraserHolder = new Pane(erasertool);
-        Label textTool = new Label("T");
-        textTool.setStyle("-fx-text-fill:white;" +
-                "-fx-font-size:30px;");
-
-        toolHolder.setId("toolHolder");
-        toolHolder.setPrefSize(20, 40);
-
-        eraserHolder.setPrefSize(20, 40);
-        eraserHolder.setId("eraserHolder");
-
-        // When clicked, update penTracker and change the background color
-        toolHolder.setOnMouseClicked(event ->
-        {
-            interfaceManager.setPenTracker(1);
-            interfaceManager.setEraserTracker(0);
-            interfaceManager.setTextTool(false);
-            toolHolder.setStyle("-fx-background-color:gray;");
-            eraserHolder.setStyle("-fx-background-color:white;");
-            interfaceManager.getGraphicsContext().setStroke(interfaceManager.getColorPicker().getValue());
-            interfaceManager.getGraphicsContext().setLineWidth(interfaceManager.getSlider().getValue());
-            ImageCursor penCursor = new ImageCursor(penImage);
-            interfaceManager.getPane().setCursor(penCursor);
-
-        });
-        eraserHolder.setOnMouseClicked(event ->
-        {
-            //preparing eraser
-
-            interfaceManager.setPenTracker(0);
-            interfaceManager.setEraserTracker(1);
-            interfaceManager.setTextTool(false);
-            eraserHolder.setStyle("-fx-background-color:gray;");
-            toolHolder.setStyle("-fx-background-color:white;");
-           interfaceManager.getGraphicsContext().setStroke(Color.WHITE);
-            interfaceManager.getGraphicsContext().setLineWidth(8);
-            Image eraserImage = new Image(getClass().getResourceAsStream("/eraser.png"));
-            ImageCursor eraserCursor = new ImageCursor(eraserImage);
-            interfaceManager.getPane().setCursor(eraserCursor);
-        });
-
-        textTool.setOnMouseClicked(event -> {
-
-            interfaceManager.setPenTracker(0);
-            interfaceManager.setEraserTracker(1);
-            eraserHolder.setStyle("-fx-background-color:white;");
-            toolHolder.setStyle("-fx-background-color:white;");
-
-            interfaceManager.setTextTool(true);
-            interfaceManager.getPane().setCursor(Cursor.DEFAULT);
-
-                CreateText();
-
-
-        });
-
-        toolsSet.getChildren().addAll(toolHolder,eraserHolder, textTool);
-
-        return toolsSet;
-    }
 
     public StackPane ActivePanel()//holds current activities such as drawing
     {
@@ -178,33 +102,9 @@ public class HelloApplication extends Application
 
         internalFunction.setPrefHeight(690);
         internalFunction.setPrefWidth(1550);
-        internalFunction.getChildren().addAll(toolsPanel(),ActivePanel(),new SettingPanel(interfaceManager).settingPanel());
+        internalFunction.getChildren().addAll(interfaceManager.toolPanel(),ActivePanel(),new SettingPanel(interfaceManager).settingPanel());
 
         return internalFunction;
-    }
-
-    private Canvas findExistingCanvas(Pane parent)
-    {
-        for (javafx.scene.Node node : parent.getChildren())
-        {
-            if (node instanceof Canvas) {
-                return (Canvas) node;
-            }
-        }
-        return null;
-    }
-
-    private void setupDrawingEvents(Canvas canvas) {
-        canvas.setOnMousePressed(event -> {
-            interfaceManager.getGraphicsContext().beginPath();
-            interfaceManager.getGraphicsContext().moveTo(event.getX(), event.getY());
-            interfaceManager.getGraphicsContext().stroke();
-        });
-
-        canvas.setOnMouseDragged(event -> {
-            interfaceManager.getGraphicsContext().lineTo(event.getX(), event.getY());
-            interfaceManager.getGraphicsContext().stroke();
-        });
     }
 
     public Pane currentActive()
@@ -217,25 +117,7 @@ public class HelloApplication extends Application
         activityPane.setId("currentActive");
 
 
-        interfaceManager.penTrackerProperty().addListener((obs, oldVal, newVal) ->
-        {
-            if (newVal.intValue() == 1 && interfaceManager.getActivities() != null) {
-                Canvas canvas = findExistingCanvas(activityPane);
-                if (canvas == null) {
-                    canvas = new Canvas(interfaceManager.getActivities().getWidth(), interfaceManager.getActivities().getHeight());
-                    interfaceManager.getActivities().getChildren().add(canvas);
-                }
 
-                interfaceManager.setGraphicsContext(canvas.getGraphicsContext2D());
-                setupDrawingEvents(canvas);
-            }
-            interfaceManager.setPicture(false);
-        });
-
-       interfaceManager.eraserTrackerProperty().addListener((obs, oldVal, newVal) ->
-        {
-
-        });
 
         interfaceManager.getTextFile().setOnMouseClicked(event ->
         {
@@ -273,6 +155,7 @@ public class HelloApplication extends Application
         {
 
             medium.openVideoMediaFile();
+            interfaceManager.setPicture(true);
         });
 
         interfaceManager.getOpenMultiMedia().setOnMouseClicked(event ->//uploading the pictures
@@ -300,6 +183,7 @@ public class HelloApplication extends Application
         {
             interfaceManager.setPane(new StackPane());
             medium.openMediaFile();
+            interfaceManager.setPicture(true);
 
         });
 
@@ -313,6 +197,7 @@ public class HelloApplication extends Application
 
     public StackPane drawingImage()//for drawable image
     {
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
         fileChooser.getExtensionFilters().addAll(
@@ -346,12 +231,16 @@ public class HelloApplication extends Application
                 drawingCanvas.setOnMousePressed(e -> {
                     interfaceManager.getGraphicsContext().beginPath();
                     interfaceManager.getGraphicsContext().moveTo(e.getX(), e.getY());
-                    interfaceManager.getGraphicsContext().stroke();
+                    if(interfaceManager.getPenTracker()==1 || interfaceManager.getEraserTracker() == 1) {
+                        interfaceManager.getGraphicsContext().stroke();
+                    }
                 });
 
                 drawingCanvas.setOnMouseDragged(e -> {
                     interfaceManager.getGraphicsContext().lineTo(e.getX(), e.getY());
-                    interfaceManager.getGraphicsContext().stroke();
+                    if(interfaceManager.getPenTracker()==1 || interfaceManager.getEraserTracker() == 1) {
+                        interfaceManager.getGraphicsContext().stroke();
+                    }
 
                 });
 
@@ -373,6 +262,7 @@ public class HelloApplication extends Application
                 new Alert(Alert.AlertType.ERROR, "Error loading image: " + e.getMessage()).show();
             }
         }
+
         interfaceManager.setPicture(false);
 
         return interfaceManager.getPane();
@@ -421,7 +311,7 @@ public class HelloApplication extends Application
             }
             // For other nodes (ImageView, HBox, etc.)
             else {
-                if (node.getParent().getParent() instanceof Pane) {
+                if (node.getParent() instanceof Pane) {
                     Pane parent = (Pane) node.getParent();
                     // Ensure we don't drag outside parent bounds
                     newX = Math.max(0, Math.min(newX, parent.getWidth() - node.getBoundsInParent().getWidth()));
@@ -435,79 +325,8 @@ public class HelloApplication extends Application
     }
 
 
-    public void CreateText()
-    {
-        // Only proceed if text tool is selected and other tools are not
-        if(interfaceManager.isTextTool() && interfaceManager.getPenTracker() == 0 && interfaceManager.getPenTracker() == 0)
-        {
-            selectionRect = new Rectangle();
-            selectionRect.setFill(Color.LIGHTBLUE.deriveColor(0, 1, 1, 0.5));
-            selectionRect.setStroke(Color.BLUE);
-            selectionRect.setVisible(false);
-            interfaceManager.getActivities().getChildren().add(selectionRect);
 
-            interfaceManager.getActivities().getChildren().getFirst().setOnMousePressed(e -> {
-                if(interfaceManager.isTextTool()) {
-                    startX = e.getX();
-                    startY = e.getY();
 
-                    // Initialize selection rectangle
-                    selectionRect.setX(startX);
-                    selectionRect.setY(startY);
-                    selectionRect.setWidth(0);
-                    selectionRect.setHeight(0);
-                    selectionRect.setVisible(true);
-                }
-            });
 
-            interfaceManager.getActivities().getChildren().getFirst().setOnMouseDragged(e -> {
-                if(interfaceManager.isTextTool() && selectionRect.isVisible()) {
-                    // Update selection rectangle dimensions during drag
-                    double x = Math.min(startX, e.getX());
-                    double y = Math.min(startY, e.getY());
-                    double width = Math.abs(e.getX() - startX);
-                    double height = Math.abs(e.getY() - startY);
-
-                    selectionRect.setX(x);
-                    selectionRect.setY(y);
-                    selectionRect.setWidth(width);
-                    selectionRect.setHeight(height);
-                }
-            });
-
-            interfaceManager.getActivities().getChildren().getFirst().setOnMouseReleased(e -> {
-                if(interfaceManager.isTextTool() && selectionRect != null && selectionRect.isVisible()) {
-                    selectionRect.setVisible(false);
-
-                    // Only create text field if drag was significant
-                    if (selectionRect.getWidth() > 10 && selectionRect.getHeight() > 10) {
-                        createTextField(selectionRect.getX(), selectionRect.getY(),
-                                selectionRect.getWidth(), selectionRect.getHeight());
-                    }
-                }
-            });
-        }
-        else {
-            // Clean up if switching away from text tool
-            if(selectionRect != null && interfaceManager.getActivities().getChildren().contains(selectionRect)) {
-                interfaceManager.getActivities().getChildren().remove(selectionRect);
-            }
-
-        }
-    }
-
-    private void createTextField(double x, double y, double width, double height) {
-        TextField textField = new TextField();
-        textField.setLayoutX(x);
-        textField.setLayoutY(y);
-        textField.setPrefWidth(width);
-        textField.setPrefHeight(height);
-
-        // Add to the root pane
-        ((Pane) selectionRect.getParent()).getChildren().add(textField);
-
-        // Focus the new text field immediately
-        textField.requestFocus();
-    }
 
 }

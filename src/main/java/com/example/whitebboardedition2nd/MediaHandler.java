@@ -107,8 +107,10 @@ public class MediaHandler
         progressSlider.setMin(0);
 
         // Update progress slider while playing
-        mediaPlayer.currentTimeProperty().addListener((obs, oldVal, newVal) -> {
-            if (!progressSlider.isValueChanging()) {
+        mediaPlayer.currentTimeProperty().addListener((obs, oldVal, newVal) ->
+        {
+            if (!progressSlider.isValueChanging())
+            {
                 progressSlider.setValue(newVal.toSeconds());
             }
         });
@@ -123,7 +125,7 @@ public class MediaHandler
         progressSlider.setOnMouseDragged(e -> mediaPlayer.seek(Duration.seconds(progressSlider.getValue())));
 
         // Play/Pause Button
-        Button playButton = new Button("▶");
+        Button playButton = new Button("⏸");
         playButton.setOnAction(e -> togglePlayPause(playButton));
 
         // Stop Button
