@@ -7,11 +7,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.image.WritableImage;
-import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
-import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
@@ -19,12 +15,9 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
-import java.io.PrintStream;
-import java.util.Scanner;
+
 
 public class HelloApplication extends Application
 {
@@ -32,9 +25,6 @@ public class HelloApplication extends Application
     InterfaceManager interfaceManager = new InterfaceManager();
     private double xOffset = 0;//for dragging the stage
     private double yOffset = 0;//for dragging the stage
-    private double startX, startY;//for creating a text field
-    private Rectangle selectionRect;
-    private Circle tempCircle;
     HBox outSideFunctions = interfaceManager.externalFunctions();
     MediaHandler medium = new MediaHandler(interfaceManager);
 
