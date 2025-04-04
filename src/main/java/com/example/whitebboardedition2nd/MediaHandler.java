@@ -1,5 +1,6 @@
 package com.example.whitebboardedition2nd;
 
+//including necessary libraries
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -26,17 +27,7 @@ public class MediaHandler
     private MediaPlayer mediaPlayer;
     InterfaceManager interfaceManager;
     ImageView musicImage;//image displayed when music play
-    private File lastDirectory = null;
-
-
-
-    public MediaView getMediaView() {
-        return mediaView;
-    }
-
-    public void setMediaView(MediaView mediaView) {
-        this.mediaView = mediaView;
-    }
+    private File lastDirectory = null;//for keeping used directories
 
     public MediaPlayer getMediaPlayer()
     {
@@ -47,37 +38,12 @@ public class MediaHandler
         this.mediaPlayer = mediaPlayer;
     }
 
-    public InterfaceManager getInterfaceManager() {
-        return interfaceManager;
-    }
-
-    public void setInterfaceManager(InterfaceManager interfaceManager) {
-        this.interfaceManager = interfaceManager;
-    }
-
-    public ImageView getMusicImage() {
-        return musicImage;
-    }
-
-    public void setMusicImage(ImageView musicImage) {
-        this.musicImage = musicImage;
-    }
-
-    public File getLastDirectory() {
-        return lastDirectory;
-    }
-
-    public void setLastDirectory(File lastDirectory) {
-        this.lastDirectory = lastDirectory;
-    }
-
     public MediaHandler(){}
 
     public MediaHandler(InterfaceManager interfaceManager)
     {
         this.interfaceManager = interfaceManager;
     }
-
 
     public void setupMediaPlayerUI() {
         // Create a container pane that will hold all draggable media components
@@ -224,8 +190,6 @@ public class MediaHandler
 
         if (file != null) {
             try {
-
-
                 // Remember the directory for next time
                 lastDirectory = file.getParentFile();
 
@@ -301,7 +265,8 @@ public class MediaHandler
         musicImage.setFitHeight(500);
     }
 
-    public void fetchPictures() {
+    public void fetchPictures()
+    {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add1 All", "*"));
@@ -365,7 +330,8 @@ public class MediaHandler
             setupResizeHandler(resizeHandleSE);
         }
 
-        private void setupResizeHandler(Rectangle handle) {
+        private void setupResizeHandler(Rectangle handle)
+        {
             final double[] startX = new double[1];
             final double[] startY = new double[1];
             final double[] startFitWidth = new double[1];
@@ -390,7 +356,8 @@ public class MediaHandler
         }
 
         private void setupDragHandlers() {
-            this.setOnMousePressed(event -> {
+            this.setOnMousePressed(event ->
+            {
                 if (event.getTarget() instanceof ImageView || event.getTarget() == this) {
                     dragStartX = event.getSceneX();
                     dragStartY = event.getSceneY();
@@ -411,10 +378,5 @@ public class MediaHandler
                 }
             });
         }
-    }
-
-    public void fetchMusic()
-    {
-
     }
 }

@@ -1,5 +1,6 @@
 package com.example.whitebboardedition2nd;
 
+//including necessary libraries
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
@@ -8,7 +9,6 @@ import javafx.scene.paint.Color;
 public class SettingPanel
 {
     InterfaceManager interfaceManager;
-
 
     public SettingPanel(){}
 

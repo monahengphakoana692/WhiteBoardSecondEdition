@@ -3,11 +3,6 @@ package com.example.whitebboardedition2nd;
 import javafx.scene.layout.StackPane;
 
 public interface UIinterface {
-    void createNewTextFile();
-
-    void createNewCanvas();
-
-    void editCanvas();
 
     void saveTextFile();
 
@@ -15,12 +10,7 @@ public interface UIinterface {
 
     void loadPictures(MediaHandler medium);
 
-    void loadVideos();
-
     void saveCanvas();
-
-    void loadAudio();       // Corrected method name
-
 
     void removeActivities(MediaHandler medium);
 

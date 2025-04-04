@@ -1,23 +1,18 @@
 package com.example.whitebboardedition2nd;
 
 import javafx.application.Application;
-
 import javafx.scene.*;
-
 import javafx.scene.control.*;
-
 import javafx.scene.layout.*;
-
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import java.io.IOException;
 
 
 public class HelloApplication extends Application
 {
 
-    InterfaceManager interfaceManager = new InterfaceManager();
+    InterfaceManager interfaceManager = new InterfaceManager();//manages activities running on the interface
     private double xOffset = 0;//for dragging the stage
     private double yOffset = 0;//for dragging the stage
     HBox outSideFunctions = interfaceManager.externalFunctions();
@@ -33,16 +28,12 @@ public class HelloApplication extends Application
 
         mainLayout.getChildren().addAll(outSideFunctions,internalFunctions());
 
-
-
         root.setId("root");
 
         root.getChildren().add(mainLayout);
         root.getStylesheets().add(getClass().getResource("/style.css").toExternalForm());
 
-
         setPage(interfaceManager.getStage(),new Scene(root,1400,700));
-
 
     }
 
@@ -77,17 +68,15 @@ public class HelloApplication extends Application
         actionPanel.setPrefWidth(1130);
         actionPanel.getChildren().add(currentActive());
 
-
         return actionPanel;
     }
-
 
     public HBox internalFunctions()//this is for internal activities
     {
         HBox internalFunction = new HBox();
 
         internalFunction.setPrefHeight(690);
-        internalFunction.setPrefWidth(1550);
+        internalFunction.setPrefWidth(1250);
         internalFunction.getChildren().addAll(interfaceManager.toolPanel(),ActivePanel(),new SettingPanel(interfaceManager).settingPanel());
 
         return internalFunction;
@@ -101,9 +90,6 @@ public class HelloApplication extends Application
         activityPane.setMaxWidth(1000);
         activityPane.setMaxHeight(530);
         activityPane.setId("currentActive");
-
-
-
 
         interfaceManager.getTextFile().setOnMouseClicked(event ->
         {
@@ -120,14 +106,13 @@ public class HelloApplication extends Application
 
         interfaceManager.getSaveFile().setOnMouseClicked(event ->
         {
-
             interfaceManager.saveTextFile();
             interfaceManager.setPicture(false);
         });
 
         interfaceManager.getOpenFiles().setOnMouseClicked(event ->
         {
-                interfaceManager.openTextFile();
+            interfaceManager.openTextFile();
 
         });
 
@@ -147,7 +132,6 @@ public class HelloApplication extends Application
         });
 
         //saveCanvasDrawing()
-
         interfaceManager.getSaveCanvas().setOnMouseClicked(event ->
         {
             interfaceManager.saveCanvas();
@@ -230,10 +214,5 @@ public class HelloApplication extends Application
             }
         });
     }
-
-
-
-
-
 
 }

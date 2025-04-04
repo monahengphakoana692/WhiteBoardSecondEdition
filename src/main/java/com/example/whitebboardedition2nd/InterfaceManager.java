@@ -1,5 +1,6 @@
 package com.example.whitebboardedition2nd;
 
+//including necessary libraries
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.embed.swing.SwingFXUtils;
@@ -20,8 +21,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-
-import javax.imageio.ImageIO;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -29,6 +28,7 @@ import java.util.Scanner;
 
 public class InterfaceManager implements UIinterface,Tools
 {
+    //for all activities that the user can perform
     HBox externalFunction = new HBox();
     Label textFile = new Label("NewFile");//for creating text file
     Label SaveFile = new Label("SaveFile"); // for saving files on editing board
@@ -38,20 +38,24 @@ public class InterfaceManager implements UIinterface,Tools
     Label SaveCanvas = new Label("SaveCanvas");
     Label sound = new Label("Audio");
     Label clearStage = new Label("RemoveActivity");
-    Label editCanvas = new Label("EditCanvas");
     Label newCanvas = new Label("NewCanvas");
+
+
     Stage stage = new Stage();
-    Pane activities;
+    Pane activities;//for holding every activity
     private TextArea doc = new TextArea();//for typing text to be saved
     StackPane pane;//for current display of files and activities
-    GraphicsContext graphicsContext = null;
-    Slider slider = null;
-    ColorPicker colorPicker = null;
+    GraphicsContext graphicsContext = null;//for drawing
+    private boolean isPicture = true;//for tracking whether
+
+
+    Slider slider = null;//for resizing the brush size
+    ColorPicker colorPicker = null;//for changing the color of the brush
+
+    //for checking whether the tool is on use or not
     private IntegerProperty penTracker = new SimpleIntegerProperty(0);
     private IntegerProperty eraserTracker = new SimpleIntegerProperty(0);
     private boolean isTextTool = false;
-    private boolean isPicture = true;
-    private boolean isTextTime = false;
 
 
     public void setPicture(boolean picture) {
@@ -78,33 +82,12 @@ public class InterfaceManager implements UIinterface,Tools
         return doc;
     }
 
-    public void setDoc(TextArea doc) {
-        this.doc = doc;
-    }
-
-
-    public HBox getExternalFunction() {
-        return externalFunction;
-    }
-
-    public void setExternalFunction(HBox externalFunction) {
-        this.externalFunction = externalFunction;
-    }
-
     public Label getTextFile() {
         return textFile;
     }
 
-    public void setTextFile(Label textFile) {
-        this.textFile = textFile;
-    }
-
     public Label getSaveFile() {
         return SaveFile;
-    }
-
-    public void setSaveFile(Label saveFile) {
-        SaveFile = saveFile;
     }
 
     public Label getOpenFiles()
@@ -112,103 +95,33 @@ public class InterfaceManager implements UIinterface,Tools
         return OpenFiles;
     }
 
-    public void setOpenFiles(Label openFiles) {
-        OpenFiles = openFiles;
-    }
-
     public Label getOpenMultiMedia() {
         return OpenMultiMedia;
-    }
-
-    public void setOpenMultiMedia(Label openMultiMedia) {
-        OpenMultiMedia = openMultiMedia;
     }
 
     public Label getOpenMultiMediav() {
         return OpenMultiMediav;
     }
 
-    public void setOpenMultiMediav(Label openMultiMediav) {
-        OpenMultiMediav = openMultiMediav;
-    }
-
     public Label getSaveCanvas() {
         return SaveCanvas;
     }
-
-    public void setSaveCanvas(Label saveCanvas) {
-        SaveCanvas = saveCanvas;
-    }
-
     public Label getSound() {
         return sound;
-    }
-
-    public void setSound(Label sound) {
-        this.sound = sound;
     }
 
     public Label getClearStage() {
         return clearStage;
     }
 
-    public void setClearStage(Label clearStage) {
-        this.clearStage = clearStage;
-    }
-
-    public Label getEditCanvas() {
-        return editCanvas;
-    }
-
-    public void setEditCanvas(Label editCanvas) {
-        this.editCanvas = editCanvas;
-    }
-
     public Label getNewCanvas() {
         return newCanvas;
-    }
-
-    public void setNewCanvas(Label newCanvas) {
-        this.newCanvas = newCanvas;
     }
 
     public Stage getStage() {
         return stage;
     }
 
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-
-    @Override
-    public void createNewTextFile()
-    {
-        activities = new Pane();
-        activities.setMaxWidth(1000);
-        activities.setMaxHeight(530);
-        activities.setId("currentActive");
-
-            activities.getChildren().clear();
-            pane = new StackPane();
-            doc.setText("type something");
-            doc.setPrefSize(activities.getWidth(),activities.getHeight());
-            pane.getChildren().add(doc);
-            activities.getChildren().add(pane);
-            isPicture = true;
-
-    } // Corrected method name
-
-    @Override
-    public void createNewCanvas()
-    {
-
-    }    // Corrected method name
-    @Override
-    public void editCanvas(){
-
-    }
     @Override
     public void saveTextFile()
     {
@@ -237,7 +150,6 @@ public class InterfaceManager implements UIinterface,Tools
     @Override
     public void openTextFile()
     {
-
         try
         {
             FileChooser fileChooser = new FileChooser();
@@ -273,11 +185,6 @@ public class InterfaceManager implements UIinterface,Tools
     public void loadPictures(MediaHandler medium)
     {
         medium.fetchPictures();
-
-    }
-    @Override
-    public void loadVideos()
-    {
 
     }
     @Override
@@ -322,19 +229,14 @@ public class InterfaceManager implements UIinterface,Tools
             alert.showAndWait();
         }
     }
-
-    @Override
-    public void loadAudio()
-    {
-
-    }         // Corrected method name
+        // Corrected method name
     @Override
     public void removeActivities(MediaHandler medium)
     {
         try
         {
 
-           if(isPicture!= false)
+           if(isPicture!= false)//catering for video and the sound
            {
                medium.getMediaPlayer().stop();
                medium.getMediaPlayer().dispose();
@@ -400,7 +302,6 @@ public class InterfaceManager implements UIinterface,Tools
 
         SaveCanvas.setId("ExLabels");
 
-        editCanvas.setId("ExLabels");
         sound.setId("ExLabels");
 
         clearStage.setId("ExLabels");
@@ -428,6 +329,7 @@ public class InterfaceManager implements UIinterface,Tools
 
         Button maximizeBtn = new Button("□");
         maximizeBtn.setId("windowsBtns");
+
         maximizeBtn.setOnAction(e -> {
             if (stage.isMaximized()) {
                 stage.setMaximized(false);
@@ -445,19 +347,14 @@ public class InterfaceManager implements UIinterface,Tools
 
         titleBar.getChildren().addAll(minimizeBtn, maximizeBtn, closeBtn);
         titleBar.setId("windowsBtns");
-        externalFunction.getChildren().addAll( ico,textFile,newCanvas, editCanvas,SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage,titleBar);
+        externalFunction.getChildren().addAll( ico,textFile,newCanvas,SaveFile, OpenFiles, OpenMultiMedia,OpenMultiMediav, SaveCanvas, sound, clearStage,titleBar);
         externalFunction.setStyle("-fx-spacing:50px;");
-
 
         return externalFunction;
     }
 
     public GraphicsContext getGraphicsContext() {
         return graphicsContext;
-    }
-
-    public void setGraphicsContext(GraphicsContext graphicsContext) {
-        this.graphicsContext = graphicsContext;
     }
 
     public Slider getSlider() {
@@ -480,10 +377,6 @@ public class InterfaceManager implements UIinterface,Tools
         return penTracker.get();
     }
 
-    public IntegerProperty penTrackerProperty() {
-        return penTracker;
-    }
-
     public void setPenTracker(int penTracker) {
         this.penTracker.set(penTracker);
     }
@@ -492,24 +385,9 @@ public class InterfaceManager implements UIinterface,Tools
         return eraserTracker.get();
     }
 
-    public IntegerProperty eraserTrackerProperty()
-    {
-        return eraserTracker;
-    }
-
     public void setEraserTracker(int eraserTracker)
     {
         this.eraserTracker.set(eraserTracker);
-    }
-
-    public boolean isTextTool()
-    {
-        return isTextTool;
-    }
-
-    public void setTextTool(boolean textTool)
-    {
-        isTextTool = textTool;
     }
 
     @Override
@@ -609,7 +487,7 @@ public class InterfaceManager implements UIinterface,Tools
 
                     // Select all text and focus
                     textField.selectAll();
-                    textField.requestFocus();//this makes it to focus immediately
+                    //textField.requestFocus();//this makes it to focus immediately
 
                     // Handle editing completion
                     textField.setOnAction(e ->
@@ -630,13 +508,9 @@ public class InterfaceManager implements UIinterface,Tools
                 }
             });
 
-            //if(isTextTime == true)
-            //{
-                // Add the label to the pane
                  pane.getChildren().add(label);
                 getActivities().getChildren().add(pane);
 
-            //}
         });
 
         toolsSet.getChildren().addAll(toolHolder,eraserHolder, textTool);
