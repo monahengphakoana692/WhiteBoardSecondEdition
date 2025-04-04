@@ -2,6 +2,7 @@ package com.example.whitebboardedition2nd;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.ImageCursor;
@@ -279,16 +280,13 @@ public class InterfaceManager implements UIinterface,Tools
 
     }
     @Override
-    public void saveCanvas(){
+    public void saveCanvas() {
         try {
-            // Create a temporary StackPane to hold all content we want to save
-            StackPane snapshotPane = new StackPane();
+            // Get the original pane
+            Pane originalPane = getPane();
 
-            // Add all children from the original pane to our snapshot pane
-            snapshotPane.getChildren().addAll(getPane().getChildren());
-
-            // Create a snapshot of the entire pane (which contains both canvas and text fields)
-            WritableImage image = snapshotPane.snapshot(null, null);
+            // Create a snapshot of the entire pane (which contains all nodes)
+            WritableImage image = originalPane.snapshot(null, null);
 
             // Show file chooser dialog
             FileChooser fileChooser = new FileChooser();
@@ -303,34 +301,16 @@ public class InterfaceManager implements UIinterface,Tools
 
             if (file != null) {
                 // Get file extension
-                String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1);
+                String extension = file.getName().substring(file.getName().lastIndexOf(".") + 1).toLowerCase();
 
-                // Extract pixel data from WritableImage
-                int width = (int) image.getWidth();
-                int height = (int) image.getHeight();
-                int[] pixels = new int[width * height];
-
-                image.getPixelReader().getPixels(
-                        0, 0, width, height,
-                        javafx.scene.image.PixelFormat.getIntArgbInstance(),
-                        pixels, 0, width
-                );
-
-                // Convert to BufferedImage
-                java.awt.image.BufferedImage bufferedImage = new java.awt.image.BufferedImage(
-                           width, height,
-                        java.awt.image.BufferedImage.TYPE_INT_ARGB
-                );
-                bufferedImage.setRGB(0, 0, width, height, pixels, 0, width);
-
-                // Save using ImageIO
-                ImageIO.write(bufferedImage, extension, file);
+                // Save the image directly without converting to BufferedImage
+                javax.imageio.ImageIO.write(SwingFXUtils.fromFXImage(image, null), extension, file);
 
                 // Show confirmation
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Drawing Saved");
                 alert.setHeaderText(null);
-                alert.setContentText("Your drawing and text fields have been saved successfully!");
+                alert.setContentText("Your drawing and all elements have been saved successfully!");
                 alert.showAndWait();
             }
         } catch (IOException e) {
@@ -340,7 +320,6 @@ public class InterfaceManager implements UIinterface,Tools
             alert.setContentText(e.getMessage());
             alert.showAndWait();
         }
-
     }
 
     @Override
