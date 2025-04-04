@@ -16,6 +16,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
@@ -51,10 +52,6 @@ public class InterfaceManager implements UIinterface,Tools
     private boolean isPicture = true;
     private boolean isTextTime = false;
 
-    public boolean isPicture()
-    {
-        return isPicture;
-    }
 
     public void setPicture(boolean picture) {
         isPicture = picture;
@@ -261,7 +258,6 @@ public class InterfaceManager implements UIinterface,Tools
             {
                 getDoc().appendText(filereader.next() + " ");
             }
-            isTextTime = true;
 
         } catch (Exception e)
         {
@@ -275,7 +271,6 @@ public class InterfaceManager implements UIinterface,Tools
     public void loadPictures(MediaHandler medium)
     {
         medium.fetchPictures();
-        isTextTime = true;
 
     }
     @Override
@@ -405,7 +400,6 @@ public class InterfaceManager implements UIinterface,Tools
 
 
             paneForNow.getChildren().add(canvas);
-        isTextTime = true;
 
             return paneForNow;
     }
@@ -610,7 +604,7 @@ public class InterfaceManager implements UIinterface,Tools
             getPane().setCursor(Cursor.DEFAULT);
 
             // Create and configure the label
-            Label label = new Label("Click to edit");
+            Text label = new Text("Click to edit");
             label.setStyle("-fx-font-size: 16px; -fx-border-color: lightgray; -fx-border-width: 1px; -fx-padding: 5px;");
 
             // Make it draggable
@@ -624,7 +618,7 @@ public class InterfaceManager implements UIinterface,Tools
                     TextField textField = new TextField(label.getText());
                     textField.setLayoutX(label.getLayoutX());
                     textField.setLayoutY(label.getLayoutY());
-                    textField.setPrefWidth(label.getWidth() + 20); // adding Extra width for editing
+                    textField.setPrefWidth(label.getStrokeWidth() + 90); // adding Extra width for editing
 
                     // Style to match label appearance
                     textField.setStyle("-fx-font-size: 16px; -fx-border-color: #6699FF; -fx-border-width: 1px; -fx-padding: 5px;");
@@ -638,14 +632,16 @@ public class InterfaceManager implements UIinterface,Tools
                     textField.requestFocus();//this makes it to focus immediately
 
                     // Handle editing completion
-                    textField.setOnAction(e -> {
+                    textField.setOnAction(e ->
+                    {
                         label.setText(textField.getText());
                         getActivities().getChildren().remove(textField);
                         getActivities().getChildren().add(label);
                     });
 
                     textField.focusedProperty().addListener((obs, oldVal, newVal) -> {
-                        if (!newVal) {
+                        if (!newVal)
+                        {
                             label.setText(textField.getText());
                             getActivities().getChildren().remove(textField);
                             getActivities().getChildren().add(label);
@@ -654,11 +650,13 @@ public class InterfaceManager implements UIinterface,Tools
                 }
             });
 
-            if(isTextTime == true)
-            {
+            //if(isTextTime == true)
+            //{
                 // Add the label to the pane
-                getActivities().getChildren().add(label);
-            }
+                 pane.getChildren().add(label);
+                getActivities().getChildren().add(pane);
+
+            //}
         });
 
         toolsSet.getChildren().addAll(toolHolder,eraserHolder, textTool);

@@ -12,11 +12,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.util.Scanner;
 
 public class MediaHandler
 {
@@ -69,10 +70,6 @@ public class MediaHandler
     public void setLastDirectory(File lastDirectory) {
         this.lastDirectory = lastDirectory;
     }
-
-
-
-
 
     public MediaHandler(){}
 
@@ -304,38 +301,115 @@ public class MediaHandler
         musicImage.setFitHeight(500);
     }
 
-    public void fetchPictures()
-    {
+    public void fetchPictures() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add1 All","*"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Add1 All", "*"));
         fileChooser.setTitle("Open files");
         File file = fileChooser.showOpenDialog(interfaceManager.getStage());
-        if(file!=null)
-        {
-            try
-            {
 
-                interfaceManager.getActivities().getChildren().clear();
+        if (file != null) {
+            try {
                 interfaceManager.setPane(new StackPane());
                 StackPane paneForNow = interfaceManager.getPane();
-                ImageView imageView =new ImageView(new Image(String.valueOf(file)));
-                paneForNow.getChildren().add(imageView );
 
-                HelloApplication.makeDraggable(paneForNow);
+                // Create a resizable and draggable image view
+                ResizableDraggableImageView resizableImageView = new ResizableDraggableImageView(file);
+
+                paneForNow.getChildren().add(resizableImageView);
                 interfaceManager.getActivities().getChildren().add(paneForNow);
 
-                Scanner filereader = new Scanner(file);
-                while(filereader.hasNextLine())
-                {
-                    interfaceManager.getDoc().appendText(filereader.next() + " ");
-                }
-
-            } catch (Exception e)
-            {
-
+            } catch (Exception e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    // Custom class that combines resizable and draggable functionality
+    class ResizableDraggableImageView extends StackPane
+    {
+        private final ImageView imageView;
+        private double dragStartX, dragStartY;
+        private double nodeStartX, nodeStartY;
+
+        public ResizableDraggableImageView(File file) {
+            imageView = new ImageView(new Image(file.toURI().toString()));
+            imageView.setPreserveRatio(true);
+
+            // Make sure the image isn't too large initially
+            if (imageView.getImage().getWidth() > 400 || imageView.getImage().getHeight() > 400) {
+                imageView.setFitWidth(400);
+            } else {
+                imageView.setFitWidth(imageView.getImage().getWidth());
+            }
+
+            this.getChildren().add(imageView);
+
+            // Add resize handles
+            setupResizeHandles();
+
+            // Make draggable
+            setupDragHandlers();
+        }
+
+        private void setupResizeHandles() {
+            // Create resize handles (small rectangles at corners)
+            Rectangle resizeHandleSE = new Rectangle(80, 80, Color.BLUE);// Position at bottom-right corner (inside the image bounds)
+            resizeHandleSE.setId("resized");
+            resizeHandleSE.xProperty().bind(imageView.fitWidthProperty().subtract(resizeHandleSE.getWidth()));
+            resizeHandleSE.yProperty().bind(imageView.fitHeightProperty().subtract(resizeHandleSE.getHeight()));
+
+            this.getChildren().add(resizeHandleSE);
+
+            // Add resize functionality
+            setupResizeHandler(resizeHandleSE);
+        }
+
+        private void setupResizeHandler(Rectangle handle) {
+            final double[] startX = new double[1];
+            final double[] startY = new double[1];
+            final double[] startFitWidth = new double[1];
+            final double[] startFitHeight = new double[1];
+
+            handle.setOnMousePressed(event -> {
+                startX[0] = event.getSceneX();
+                startY[0] = event.getSceneY();
+                startFitWidth[0] = imageView.getFitWidth();
+                startFitHeight[0] = imageView.getFitHeight();
+                event.consume();
+            });
+
+            handle.setOnMouseDragged(event -> {
+                double offsetX = event.getSceneX() - startX[0];
+                double offsetY = event.getSceneY() - startY[0];
+
+                imageView.setFitWidth(Math.max(50, startFitWidth[0] + offsetX));
+                imageView.setFitHeight(Math.max(50, startFitHeight[0] + offsetY));
+                event.consume();
+            });
+        }
+
+        private void setupDragHandlers() {
+            this.setOnMousePressed(event -> {
+                if (event.getTarget() instanceof ImageView || event.getTarget() == this) {
+                    dragStartX = event.getSceneX();
+                    dragStartY = event.getSceneY();
+                    nodeStartX = this.getTranslateX();
+                    nodeStartY = this.getTranslateY();
+                    event.consume();
+                }
+            });
+
+            this.setOnMouseDragged(event -> {
+                if (event.getTarget() instanceof ImageView || event.getTarget() == this) {
+                    double offsetX = event.getSceneX() - dragStartX;
+                    double offsetY = event.getSceneY() - dragStartY;
+
+                    this.setTranslateX(nodeStartX + offsetX);
+                    this.setTranslateY(nodeStartY + offsetY);
+                    event.consume();
+                }
+            });
         }
     }
 
@@ -343,5 +417,4 @@ public class MediaHandler
     {
 
     }
-
 }

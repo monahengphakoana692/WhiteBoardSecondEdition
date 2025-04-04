@@ -1,21 +1,16 @@
 package com.example.whitebboardedition2nd;
 
 import javafx.application.Application;
-import javafx.geometry.Pos;
+
 import javafx.scene.*;
-import javafx.scene.canvas.Canvas;
+
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
+
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Circle;
-import javafx.scene.shape.Rectangle;
-import javafx.stage.FileChooser;
+
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.io.File;
 import java.io.IOException;
 
 
@@ -51,7 +46,8 @@ public class HelloApplication extends Application
 
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args)
+    {
         launch();
     }
 
@@ -121,12 +117,6 @@ public class HelloApplication extends Application
             interfaceManager.setPicture(false);
         });
 
-        interfaceManager.getEditCanvas().setOnMouseClicked(event -> {
-
-            activityPane.getChildren().add(drawingImage());
-            interfaceManager.setPicture(false);
-
-        });
 
         interfaceManager.getSaveFile().setOnMouseClicked(event ->
         {
@@ -183,79 +173,6 @@ public class HelloApplication extends Application
         });
 
         return activityPane;
-    }
-
-    public StackPane drawingImage()//for drawable image
-    {
-
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File("src/main/resources/MultimediaFiles"));
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"),
-                new FileChooser.ExtensionFilter("All Files", "*.*")
-        );
-        fileChooser.setTitle("Open Image File");
-        File file = fileChooser.showOpenDialog(interfaceManager.getStage());
-
-        if (file != null) {
-            try {
-                interfaceManager.getActivities().getChildren().clear();
-
-                // Load the image
-                Image image = new Image(file.toURI().toString());
-                ImageView imageView = new ImageView(image);
-
-                // Create canvas with same dimensions as image
-                Canvas drawingCanvas = new Canvas(image.getWidth(), image.getHeight());
-                interfaceManager.setGraphicsContext(drawingCanvas.getGraphicsContext2D());
-
-                // Set up drawing tools
-                interfaceManager.getGraphicsContext().setStroke(Color.BLACK);
-                interfaceManager.getGraphicsContext().setLineWidth(2);
-
-                // Create a stack pane to layer image and canvas
-                StackPane imageCanvasPane = new StackPane();
-                imageCanvasPane.getChildren().addAll(imageView, drawingCanvas);
-
-                // Set up mouse events for drawing
-                drawingCanvas.setOnMousePressed(e -> {
-                    interfaceManager.getGraphicsContext().beginPath();
-                    interfaceManager.getGraphicsContext().moveTo(e.getX(), e.getY());
-                    if(interfaceManager.getPenTracker()==1 || interfaceManager.getEraserTracker() == 1) {
-                        interfaceManager.getGraphicsContext().stroke();
-                    }
-                });
-
-                drawingCanvas.setOnMouseDragged(e -> {
-                    interfaceManager.getGraphicsContext().lineTo(e.getX(), e.getY());
-                    if(interfaceManager.getPenTracker()==1 || interfaceManager.getEraserTracker() == 1) {
-                        interfaceManager.getGraphicsContext().stroke();
-                    }
-
-                });
-
-
-                // Add to main activities pane
-
-                interfaceManager.setPane( new StackPane(imageCanvasPane));
-                StackPane paneForNow = interfaceManager.getPane();
-                interfaceManager.getActivities().getChildren().add(paneForNow);
-                interfaceManager.getActivities().setLayoutX(400);
-                interfaceManager.getActivities().setLayoutY(70);
-
-                // Connect with existing drawing tools
-                interfaceManager.getColorPicker().setOnAction(e -> interfaceManager.getGraphicsContext().setStroke(interfaceManager.getColorPicker().getValue()));
-                interfaceManager.getSlider().valueProperty().addListener((obs, oldVal, newVal) ->
-                        interfaceManager.graphicsContext.setLineWidth(newVal.doubleValue()));
-
-            } catch (Exception e) {
-                new Alert(Alert.AlertType.ERROR, "Error loading image: " + e.getMessage()).show();
-            }
-        }
-
-        interfaceManager.setPicture(false);
-
-        return interfaceManager.getPane();
     }
 
     public static void showErrorAlert(String title, String message)

@@ -147,3 +147,15 @@
     -fx-border-color: #2980b9;
     -fx-border-width: 2px;
 }
+
+#resized
+{
+    -fx-opacity:0;
+
+}
+
+#resized:hover
+{
+    -fx-cursor:hand;
+
+}
