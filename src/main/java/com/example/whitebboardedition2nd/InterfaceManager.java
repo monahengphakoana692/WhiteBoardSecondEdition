@@ -176,6 +176,7 @@ public class InterfaceManager implements UIinterface,Tools
         return stage;
     }
 
+
     public void setStage(Stage stage) {
         this.stage = stage;
     }
