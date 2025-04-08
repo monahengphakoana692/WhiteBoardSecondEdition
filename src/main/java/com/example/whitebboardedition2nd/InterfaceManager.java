@@ -323,8 +323,9 @@ public class InterfaceManager implements UIinterface,Tools
 
         Button minimizeBtn = new Button("─");
         minimizeBtn.setId("windowsBtns");
-        minimizeBtn.setOnAction(e ->
-                stage.setIconified(true));
+        minimizeBtn.setOnAction(e ->{
+                stage.setIconified(true);
+        });
 
 
         Button maximizeBtn = new Button("□");

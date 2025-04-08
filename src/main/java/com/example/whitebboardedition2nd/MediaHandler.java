@@ -297,7 +297,8 @@ public class MediaHandler
         private double dragStartX, dragStartY;
         private double nodeStartX, nodeStartY;
 
-        public ResizableDraggableImageView(File file) {
+        public ResizableDraggableImageView(File file)
+        {
             imageView = new ImageView(new Image(file.toURI().toString()));
             imageView.setPreserveRatio(true);
 

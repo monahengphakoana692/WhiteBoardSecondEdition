@@ -1,41 +1,41 @@
 #root {
-    -fx-background-color: #2e2e2e;
+    -fx-background-color: #2e2e2e;/*dark gray*/
 }
 
 /* Toolbar panel */
 #toolPanel {
-    -fx-background-color: #3c3c3c;
-    -fx-border-color: #4a4a4a;
+    -fx-background-color: #3c3c3c;/*light gray*/
+    -fx-border-color: #4a4a4a;/*light gray*/
     -fx-border-width: 0 1px 0 0;
     -fx-padding: 10px;
     -fx-spacing: 15px;
 }
 
 #externalFunctions {
-    -fx-background-color: #5b5b5b;
-    -fx-border-color: #4a4a4a;
+    -fx-background-color: #5b5b5b;/*light gray*/
+    -fx-border-color: #4a4a4a;/*light gray*/
     -fx-border-width: 0 0 1px 0;
     -fx-spacing: 15px;
     -fx-padding: 0 10px;
 }
 
 #settings {
-    -fx-background-color: #3c3c3c;
-    -fx-border-color: #4a4a4a;
+    -fx-background-color: #3c3c3c;/*light gray*/
+    -fx-border-color: #4a4a4a;/*light gray*/
     -fx-border-width: 0 0 0 1px;
     -fx-padding: 15px;
 }
 
 #actionPanel {
-    -fx-background-color: #1e1e1e;
-    -fx-border-color: #4a4a4a;
+    -fx-background-color: #1e1e1e;/*dark gray*/
+    -fx-border-color: #4a4a4a;/*light gray*/
     -fx-border-width: 1px;
     -fx-padding: 10px;
 }
 
 #currentActive {
-    -fx-background-color: #2e2e2e;
-    -fx-border-color: #4a4a4a;
+    -fx-background-color: #2e2e2e;/*dark gray*/
+    -fx-border-color: #4a4a4a;/*light gray*/
     -fx-border-width: 1px;
 }
 
@@ -45,8 +45,8 @@
 }
 
 #toolHolder, #eraserHolder {
-    -fx-background-color: #4a4a4a;
-    -fx-border-color: #5b5b5b;
+    -fx-background-color: #4a4a4a;/*light gray*/
+    -fx-border-color: #5b5b5b;/*light gray*/
     -fx-border-width: 1px;
     -fx-border-radius: 3px;
     -fx-padding: 5px;
@@ -54,7 +54,7 @@
 }
 
 #toolHolder:hover, #eraserHolder:hover {
-    -fx-background-color: #5b5b5b;
+    -fx-background-color: #5b5b5b;/*light gray*/
 }
 
 #ExLabels {
@@ -65,7 +65,7 @@
 }
 
 #ExLabels:hover {
-    -fx-text-fill: #3498db;
+    -fx-text-fill: #3498db;/*Royal Blue*/
     -fx-font-size: 14px;
     -fx-underline: true;
 }
@@ -79,15 +79,15 @@
 }
 
 #windowsBtns:hover {
-    -fx-background-color: #4a4a4a;
+    -fx-background-color: #4a4a4a;/*light gray*/
 }
 
 #windowsBtns:close:hover {
-    -fx-background-color: #e81123;
+    -fx-background-color: #e81123;/*red*/
 }
 
 #mediaView {
-    -fx-border-color: #3498db;
+    -fx-border-color: #3498db;/*Royal Blue*/
     -fx-border-width: 2px;
     -fx-border-radius: 5px;
     -fx-background-color: black;
@@ -96,12 +96,12 @@
 
 #mediaView:hover {
     -fx-cursor: hand;
-    -fx-border-color: #2980b9;
+    -fx-border-color: #2980b9;/*skyblue*/
 }
 
 /* Media controls */
 .media-container {
-    -fx-background-color: #2e2e2e;
+    -fx-background-color: #2e2e2e;/*dark gray*/
     -fx-padding: 15px;
     -fx-alignment: center;
     -fx-spacing: 10px;
@@ -122,21 +122,21 @@
 }
 
 .media-controls .button:hover {
-    -fx-text-fill: #3498db;
+    -fx-text-fill: #3498db;/*Royal Blue*/
 }
 
 .slider .track {
-    -fx-background-color: #4a4a4a;
+    -fx-background-color: #4a4a4a;/*light gray*/
 }
 
 .slider .thumb {
-    -fx-background-color: #3498db;
+    -fx-background-color: #3498db;/*Royal Blue*/
 }
 
 /* Text fields */
 .text-field {
     -fx-background-color: rgba(255, 255, 255, 0.9);
-    -fx-border-color: #3498db;
+    -fx-border-color: #3498db;/*Royal Blue*/
     -fx-border-width: 1px;
     -fx-border-radius: 3px;
     -fx-padding: 5px;
@@ -144,7 +144,7 @@
 }
 
 .text-field:focused {
-    -fx-border-color: #2980b9;
+    -fx-border-color: #2980b9;/*Blue*/
     -fx-border-width: 2px;
 }
 
