@@ -82,7 +82,7 @@ public class HelloApplication extends Application
         return internalFunction;
     }
 
-    public Pane currentActive()
+    public Pane currentActive()//running activities
     {
 
         interfaceManager.setActivities(new Pane());

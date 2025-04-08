@@ -82,10 +82,6 @@
     -fx-background-color: #4a4a4a;/*light gray*/
 }
 
-#windowsBtns:close:hover {
-    -fx-background-color: #e81123;/*red*/
-}
-
 #mediaView {
     -fx-border-color: #3498db;/*Royal Blue*/
     -fx-border-width: 2px;
